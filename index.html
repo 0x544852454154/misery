@@ -48,13 +48,22 @@
         #loader.done { opacity: 0; visibility: hidden; pointer-events: none; }
         .loader-text {
             font-family: 'JetBrains Mono', monospace;
-            color: #555; font-size: 0.7rem; letter-spacing: 4px; text-transform: uppercase;
+            color: #555; font-size: 0.8rem; letter-spacing: 4px; text-transform: uppercase;
             transition: color 0.3s;
+            text-shadow: 0 0 10px rgba(255,255,255,0);
         }
         #loader.active-click { cursor: pointer; }
-        #loader.active-click .loader-text { color: #fff; animation: pulse-dot 2s infinite; }
+        #loader.active-click .loader-text { 
+            color: #fff; 
+            animation: text-glow 2s infinite ease-in-out;
+        }
+        @keyframes text-glow {
+            0%, 100% { opacity: 0.5; text-shadow: 0 0 8px rgba(255,255,255,0.2); }
+            50% { opacity: 1; text-shadow: 0 0 20px rgba(255,255,255,0.6); }
+        }
         .loader-track {
             width: 220px; height: 2px; background: #1a1a1a; overflow: hidden;
+            transition: opacity 0.4s ease;
         }
         .loader-fill {
             height: 100%; width: 0%; background: #fff; transition: width 0.1s linear;
@@ -119,19 +128,6 @@
             -webkit-mask-image: radial-gradient(ellipse at center, black 20%, transparent 70%);
         }
 
-        /* ── glitch transition ── */
-        body.glitch-active {
-            animation: body-glitch 0.3s steps(2) 1;
-        }
-        @keyframes body-glitch {
-            0% { filter: none; transform: translate(0); }
-            20% { filter: invert(0.1) hue-rotate(90deg); transform: translate(-3px, 1px); }
-            40% { filter: invert(0.1) hue-rotate(-90deg); transform: translate(3px, -1px); }
-            60% { filter: invert(0.1); transform: translate(-1px, 2px); }
-            80% { filter: invert(0.05); transform: translate(1px, 0); }
-            100% { filter: none; transform: translate(0); }
-        }
-
         /* ── main layout ── */
         #main {
             position: relative; z-index: 10;
@@ -160,7 +156,12 @@
             box-shadow: 0 0 8px rgba(255,255,255,0.4); animation: pulse-dot 2s infinite;
         }
         @keyframes pulse-dot {
-            0%, 100% { opacity: 0.4; } 50% { opacity: 1; box-shadow: 0 0 14px rgba(255,255,255,0.7); }
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; box-shadow: 0 0 14px rgba(255,255,255,0.7); }
+        }
+        @keyframes pulse-text {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
         }
         .track-info { opacity: 0; transition: opacity 0.6s ease; }
         .track-info.active { opacity: 1; }
@@ -212,7 +213,7 @@
                 inset 0 -1px 1px rgba(0,0,0,0.5);
             width: 320px; height: 480px;
             backface-visibility: hidden;
-            transition: box-shadow 0.1s linear;
+            transition: box-shadow 0.1s linear, border-color 0.1s linear;
         }
 
         .card::before, .card::after {
@@ -406,7 +407,7 @@
         .nav-hint {
             position: absolute; bottom: 20px; font-size: 0.55rem; color: #333; letter-spacing: 2px;
             z-index: 10; display: flex; align-items: center; gap: 8px;
-            animation: pulse-dot 3s infinite;
+            animation: pulse-text 3s infinite;
         }
 
         .dots {
@@ -429,7 +430,7 @@
     <!-- Loader -->
     <div id="loader">
         <div class="loader-text" id="loader-text">LOADING...</div>
-        <div class="loader-track">
+        <div class="loader-track" id="loader-track">
             <div class="loader-fill" id="loader-fill"></div>
         </div>
     </div>
@@ -587,6 +588,7 @@
     const loader = document.getElementById('loader');
     const loaderFill = document.getElementById('loader-fill');
     const loaderText = document.getElementById('loader-text');
+    const loaderTrack = document.getElementById('loader-track');
     let progress = 0;
 
     const loadInterval = setInterval(() => {
@@ -597,7 +599,10 @@
             clearInterval(loadInterval);
             
             setTimeout(() => {
-                loaderText.textContent = 'CLICK TO ENTER';
+                loaderTrack.style.opacity = '0';
+                setTimeout(() => { loaderTrack.style.display = 'none'; }, 400);
+                
+                loaderText.textContent = '> CLICK TO ENTER';
                 loader.classList.add('active-click');
                 
                 loader.addEventListener('click', () => {
@@ -674,13 +679,6 @@
         carousel.style.transform = `rotateY(${baseAngle + tiltY}deg) rotateX(${tiltX}deg)`;
     }
 
-    function triggerGlitch() {
-        document.body.classList.remove('glitch-active');
-        void document.body.offsetWidth;
-        document.body.classList.add('glitch-active');
-        setTimeout(() => document.body.classList.remove('glitch-active'), 300);
-    }
-
     function updateCarousel() {
         baseAngle = -currentCard * (360 / cards.length);
         applyTransform();
@@ -690,7 +688,6 @@
     function nextCard() {
         if (isAnimating) return;
         isAnimating = true;
-        triggerGlitch();
         currentCard = (currentCard + 1) % cards.length;
         updateCarousel();
         setTimeout(() => { isAnimating = false; }, 800);
@@ -698,7 +695,6 @@
     function prevCard() {
         if (isAnimating) return;
         isAnimating = true;
-        triggerGlitch();
         currentCard = (currentCard - 1 + cards.length) % cards.length;
         updateCarousel();
         setTimeout(() => { isAnimating = false; }, 800);
@@ -835,7 +831,7 @@
 
         if (!analyser || !isPlaying) {
             // Reset border if not playing
-            audioCard.style.boxShadow = `0 0 0 1px rgba(255,255,255,0.02), 0 25px 70px rgba(0,0,0,0.95), inset 0 1px 1px rgba(255,255,255,0.1), inset 0 -1px 1px rgba(0,0,0,0.5)`;
+            audioCard.style.borderColor = `rgba(255,255,255,0.08)`;
             return;
         }
 
@@ -845,17 +841,9 @@
         let bass = 0;
         for(let i=0; i<4; i++) bass += dataArray[i];
         bass = bass / 4 / 255;
-        const glowSize = 5 + bass * 40;
-        const glowOpacity = 0.05 + bass * 0.35;
         
-        // Apply dynamic box shadow to the whole audio card
-        audioCard.style.boxShadow = `
-            0 0 0 1px rgba(255,255,255,${0.05 + bass * 0.2}), 
-            0 0 ${glowSize}px rgba(255,255,255,${glowOpacity}), 
-            0 25px 70px rgba(0,0,0,0.95), 
-            inset 0 1px 1px rgba(255,255,255,0.1), 
-            inset 0 -1px 1px rgba(0,0,0,0.5)
-        `;
+        // Make the border itself thicker/brighter with bass (no square box-shadow)
+        audioCard.style.borderColor = `rgba(255,255,255,${0.1 + bass * 0.6})`;
 
         // Draw circular visualizer
         const centerX = 65; const centerY = 65; const radius = 48;
