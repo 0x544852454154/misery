@@ -312,6 +312,60 @@
             height: 100%; width: 0%; background: rgba(255,255,255,0.5); transition: width 1s linear; 
         }
 
+        /* ── alts card specific ── */
+        .alts-container {
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .alt-row {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 10px;
+            background: rgba(0,0,0,0.2);
+            border: 1px solid rgba(255,255,255,0.035);
+            border-radius: 4px;
+            transition: all 0.2s ease;
+        }
+        .alt-row:hover {
+            background: rgba(255,255,255,0.04);
+            border-color: rgba(255,255,255,0.08);
+        }
+        .avatar-wrap.small {
+            width: 54px; height: 54px;
+            flex-shrink: 0;
+        }
+        .avatar-wrap.small .avatar {
+            border-width: 2px;
+        }
+        .avatar-wrap.small .avatar-decoration {
+            width: 70px; height: 70px; /* ~1.3x scale of 54px */
+        }
+        .avatar-wrap.small .avatar-ring {
+            inset: -3px;
+            border-color: rgba(255,255,255,0.05);
+        }
+        .avatar-wrap.small .status-dot {
+            width: 12px; height: 12px;
+            border-width: 2px;
+            bottom: 2px; right: 2px;
+        }
+        .alt-info {
+            display: flex; flex-direction: column; gap: 2px;
+            overflow: hidden;
+        }
+        .alt-name {
+            font-size: 0.75rem; color: #ddd; font-weight: 500;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+        .alt-username {
+            font-size: 0.6rem; color: #444;
+            white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        }
+
         /* ── audio card specific ── */
         .playlist-title {
             font-size: 0.9rem;
@@ -462,6 +516,7 @@
             <div class="dot active"></div>
             <div class="dot"></div>
             <div class="dot"></div>
+            <div class="dot"></div>
         </div>
 
         <div id="carousel-container">
@@ -496,6 +551,50 @@
                         <div id="spotify-box" style="display:none;">
                             <div class="spotify-progress-bar">
                                 <div id="spotify-progress" class="spotify-progress-fill"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Accounts Card -->
+                <div class="card" id="alts-card">
+                    <div class="card-label">ACCOUNTS</div>
+                    <div class="playlist-title">ALL ACCOUNTS</div>
+                    <div class="alts-container">
+                        <div class="alt-row" id="alt-0">
+                            <div class="avatar-wrap small">
+                                <div class="avatar-ring"></div>
+                                <img class="avatar" src="" alt="avatar" crossorigin="anonymous">
+                                <img class="avatar-decoration hidden" src="" alt="decoration">
+                                <span class="status-dot"></span>
+                            </div>
+                            <div class="alt-info">
+                                <div class="alt-name">Loading...</div>
+                                <div class="alt-username">@...</div>
+                            </div>
+                        </div>
+                        <div class="alt-row" id="alt-1">
+                            <div class="avatar-wrap small">
+                                <div class="avatar-ring"></div>
+                                <img class="avatar" src="" alt="avatar" crossorigin="anonymous">
+                                <img class="avatar-decoration hidden" src="" alt="decoration">
+                                <span class="status-dot"></span>
+                            </div>
+                            <div class="alt-info">
+                                <div class="alt-name">Loading...</div>
+                                <div class="alt-username">@...</div>
+                            </div>
+                        </div>
+                        <div class="alt-row" id="alt-2">
+                            <div class="avatar-wrap small">
+                                <div class="avatar-ring"></div>
+                                <img class="avatar" src="" alt="avatar" crossorigin="anonymous">
+                                <img class="avatar-decoration hidden" src="" alt="decoration">
+                                <span class="status-dot"></span>
+                            </div>
+                            <div class="alt-info">
+                                <div class="alt-name">Loading...</div>
+                                <div class="alt-username">@...</div>
                             </div>
                         </div>
                     </div>
@@ -568,7 +667,11 @@
 (function() {
     "use strict";
 
-    const USER_ID = '1521890728094208122';
+    const ACCOUNT_IDS = [
+        '1521890728094208122', // Main
+        '1521894699630067802', // Alt 1
+        '1521886408988426240'  // Alt 2
+    ];
     const RETRY_DELAYS = [1000, 2000, 4000];
 
     const STATUS_COLORS = {
@@ -970,24 +1073,33 @@
 
     async function loadProfile() {
         const conn = document.getElementById('connection-status');
-        const data = await fetchUser(USER_ID);
-        if (!data || !data.discord_user) {
+        
+        // Fetch all accounts in parallel
+        const results = await Promise.allSettled(ACCOUNT_IDS.map(id => fetchUser(id)));
+        
+        let mainData = null;
+        if (results[0].status === 'fulfilled') mainData = results[0].value;
+        
+        if (!mainData || !mainData.discord_user) {
             conn.textContent = 'offline'; conn.style.color = '#333';
             document.getElementById('display-name').textContent = 'unknown';
             document.getElementById('username').textContent = '@unknown';
             document.getElementById('status-text').textContent = 'connection failed';
-            document.getElementById('custom-status').textContent = 'no signal'; return;
+            document.getElementById('custom-status').textContent = 'no signal'; 
+            return;
         }
-        const user = data.discord_user; const status = data.discord_status; const activities = data.activities || [];
+        
         conn.textContent = 'connected'; conn.style.color = '#444';
+        
+        // --- Update Main Card ---
+        const user = mainData.discord_user; 
+        const status = mainData.discord_status; 
+        const activities = mainData.activities || [];
         
         const avatarImg = document.getElementById('avatar');
         setAvatarWithFallback(avatarImg, user, 256);
-        
-        // Generate ASCII once the image loads
         avatarImg.onload = () => generateAscii(avatarImg);
 
-        // Apply avatar decoration
         const decEl = document.getElementById('decoration');
         if (user.avatar_decoration_data && user.avatar_decoration_data.asset) {
             decEl.src = 'https://cdn.discordapp.com/avatar-decoration-presets/' + user.avatar_decoration_data.asset + '.png?size=256&passthrough=true';
@@ -1021,6 +1133,32 @@
             if (mainActivity.details) txt += ' — ' + mainActivity.details;
             presenceLine.style.display = 'flex'; typeText(presenceText, txt, 20);
         } else { presenceLine.style.display = 'none'; }
+
+        // --- Update Alts Card ---
+        results.forEach((res, index) => {
+            if (res.status !== 'fulfilled' || !res.value || !res.value.discord_user) return;
+            const altUser = res.value.discord_user;
+            const altStatus = res.value.discord_status;
+            const row = document.getElementById('alt-' + index);
+            if (!row) return;
+
+            setAvatarWithFallback(row.querySelector('.avatar'), altUser, 128);
+            
+            const altDecEl = row.querySelector('.avatar-decoration');
+            if (altUser.avatar_decoration_data && altUser.avatar_decoration_data.asset) {
+                altDecEl.src = 'https://cdn.discordapp.com/avatar-decoration-presets/' + altUser.avatar_decoration_data.asset + '.png?size=128&passthrough=true';
+                altDecEl.classList.remove('hidden');
+                altDecEl.onerror = () => altDecEl.classList.add('hidden');
+            } else {
+                altDecEl.classList.add('hidden');
+            }
+
+            row.querySelector('.alt-name').textContent = altUser.global_name || altUser.username;
+            row.querySelector('.alt-username').textContent = '@' + altUser.username;
+            
+            const altDot = row.querySelector('.status-dot');
+            altDot.className = 'status-dot ' + (STATUS_COLORS[altStatus] || '');
+        });
     }
 
     setInterval(() => {
