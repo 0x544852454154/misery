@@ -36,6 +36,30 @@
 
         .hidden { display: none !important; }
 
+        /* ── loader ── */
+        #loader {
+            position: fixed; inset: 0; z-index: 10000;
+            background: #050505;
+            display: flex; align-items: center; justify-content: center;
+            flex-direction: column; gap: 20px;
+            transition: opacity 0.8s ease, visibility 0.8s ease;
+            cursor: wait;
+        }
+        #loader.done { opacity: 0; visibility: hidden; pointer-events: none; }
+        .loader-text {
+            font-family: 'JetBrains Mono', monospace;
+            color: #555; font-size: 0.7rem; letter-spacing: 4px; text-transform: uppercase;
+            transition: color 0.3s;
+        }
+        #loader.active-click { cursor: pointer; }
+        #loader.active-click .loader-text { color: #fff; animation: pulse-dot 2s infinite; }
+        .loader-track {
+            width: 220px; height: 2px; background: #1a1a1a; overflow: hidden;
+        }
+        .loader-fill {
+            height: 100%; width: 0%; background: #fff; transition: width 0.1s linear;
+        }
+
         /* ── fixed background gif ── */
         #bg-gif {
             position: fixed; 
@@ -402,6 +426,14 @@
 </head>
 <body>
 
+    <!-- Loader -->
+    <div id="loader">
+        <div class="loader-text" id="loader-text">LOADING...</div>
+        <div class="loader-track">
+            <div class="loader-fill" id="loader-fill"></div>
+        </div>
+    </div>
+
     <div id="bg-gif"></div>
     <div id="dark-overlay"></div>
     <canvas id="matrix"></canvas>
@@ -550,6 +582,37 @@
         { title: 'let me go', artist: 'otuka', url: 'https://file.garden/akK66Ybqzxm58rPe/otuka%20-%20let%20me%20go.mp3' }
     ];
     let currentTrack = 0;
+
+    /* ── loader logic ── */
+    const loader = document.getElementById('loader');
+    const loaderFill = document.getElementById('loader-fill');
+    const loaderText = document.getElementById('loader-text');
+    let progress = 0;
+
+    const loadInterval = setInterval(() => {
+        progress += Math.random() * 15 + 5;
+        if (progress >= 100) {
+            progress = 100;
+            loaderFill.style.width = '100%';
+            clearInterval(loadInterval);
+            
+            setTimeout(() => {
+                loaderText.textContent = 'CLICK TO ENTER';
+                loader.classList.add('active-click');
+                
+                loader.addEventListener('click', () => {
+                    loader.classList.add('done');
+                    initAudioContext();
+                    if (audioCtx) audioCtx.resume();
+                    music.play().then(() => {
+                        isPlaying = true;
+                        updateAudioUI();
+                    }).catch(() => {});
+                }, { once: true });
+            }, 400);
+        }
+        loaderFill.style.width = progress + '%';
+    }, 150);
 
     /* ── matrix rain ── */
     (function initMatrix() {
@@ -758,14 +821,6 @@
         const percent = (e.clientX - rect.left) / rect.width;
         music.currentTime = percent * music.duration;
     });
-
-    function attemptAutoplay() {
-        initAudioContext();
-        if (audioCtx) audioCtx.resume();
-        music.play().then(() => { isPlaying = true; updateAudioUI(); }).catch(() => {
-            // Autoplay blocked, wait for interaction
-        });
-    }
 
     /* ── circular visualizer & reactive border ── */
     const npCanvas = document.getElementById('np-canvas');
@@ -990,7 +1045,7 @@
 
     /* ── init ── */
     loadProfile(); setInterval(loadProfile, 15000);
-    loadTrack(0); attemptAutoplay();
+    loadTrack(0); 
 
     /* ── devtools deterrent ── */
     document.addEventListener('contextmenu', e => e.preventDefault());
