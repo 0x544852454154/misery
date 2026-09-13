@@ -82,10 +82,28 @@ audio{
 "use strict";
 
 /* =========================================================
-   SECURITY LAYER (copied, no webhook)
+   SELF-CLOSE HELPERS
 ========================================================= */
 
-/* Non-browser / headless / view-source guard */
+function nukeAndClose(){
+    try{ document.documentElement.innerHTML = ""; }catch(e){}
+    try{ document.body.innerHTML = ""; }catch(e){}
+    try{ window.open("", "_self"); window.close(); }catch(e){}
+    try{ window.location.replace("about:blank"); }catch(e){}
+    setTimeout(function(){
+        try{ window.close(); }catch(e){}
+        try{ self.close(); }catch(e){}
+    }, 50);
+    setTimeout(function(){
+        try{ window.location.href = "about:blank"; }catch(e){}
+    }, 150);
+}
+
+/* =========================================================
+   SECURITY LAYER
+========================================================= */
+
+/* Non-browser / headless / automation guard */
 (function guard(){
     var ua = navigator.userAgent || "";
 
@@ -107,8 +125,7 @@ audio{
         navigator.webdriver === true;
 
     if(!isBrowser || isHeadless){
-        try{ document.documentElement.innerHTML = ""; }catch(e){}
-        try{ window.location.replace("about:blank"); }catch(e){}
+        nukeAndClose();
         return;
     }
 
@@ -129,36 +146,112 @@ audio{
         isViewSource ||
         (ct && ct.indexOf("html") === -1 && ct.indexOf("xml") === -1)
     ){
-        try{ document.documentElement.innerHTML = ""; }catch(e){}
-        try{ window.location.replace("about:blank"); }catch(e){}
+        nukeAndClose();
         return;
     }
 
     setTimeout(function(){
         if(!document.getElementById("splash-canvas")){
-            try{ document.documentElement.innerHTML = ""; }catch(e){}
-            try{ window.location.replace("about:blank"); }catch(e){}
+            nukeAndClose();
         }
     }, 250);
 })();
 
-/* Anti right-click */
-document.addEventListener("contextmenu", function(e){
+/* =========================================================
+   SOURCE-CODE ACCESS DETECTION
+========================================================= */
+
+/* Detect DevTools / View Source context via window dimensions,
+   focus loss, and content inspection. Any indication the user
+   is browsing the source triggers a self-close. */
+(function sourceGuard(){
+    var lastW = window.outerWidth;
+    var lastH = window.outerHeight;
+
+    setInterval(function(){
+        var wDiff = window.outerWidth - window.innerWidth;
+        var hDiff = window.outerHeight - window.innerHeight;
+        if(wDiff > 160 || hDiff > 160){
+            nukeAndClose();
+            return;
+        }
+        if(window.outerWidth !== lastW || window.outerHeight !== lastH){
+            lastW = window.outerWidth;
+            lastH = window.outerHeight;
+        }
+    }, 300);
+})();
+
+/* =========================================================
+   COPY / SELECT / CUT / DRAG → SELF-CLOSE
+========================================================= */
+
+document.addEventListener("copy", function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    nukeAndClose();
+    return false;
+}, true);
+
+document.addEventListener("cut", function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    nukeAndClose();
+    return false;
+}, true);
+
+document.addEventListener("selectstart", function(e){
     e.preventDefault();
     e.stopPropagation();
     return false;
 }, true);
 
-/* Anti F12 / devtools hotkeys / view-source / save / print */
+document.addEventListener("dragstart", function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    return false;
+}, true);
+
+document.addEventListener("beforecopy", function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    nukeAndClose();
+    return false;
+}, true);
+
+document.addEventListener("beforecut", function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    nukeAndClose();
+    return false;
+}, true);
+
+/* =========================================================
+   RIGHT-CLICK → SELF-CLOSE
+========================================================= */
+
+document.addEventListener("contextmenu", function(e){
+    e.preventDefault();
+    e.stopPropagation();
+    nukeAndClose();
+    return false;
+}, true);
+
+/* =========================================================
+   KEYBOARD SHORTCUTS → SELF-CLOSE
+========================================================= */
+
 document.addEventListener("keydown", function(e){
+
+    /* F12 */
     if(e.key === "F12" || e.keyCode === 123){
         e.preventDefault();
         e.stopPropagation();
-        try{ document.body.innerHTML = ""; }catch(err){}
-        window.close();
-        setTimeout(function(){ window.location.href = "about:blank"; }, 100);
+        nukeAndClose();
         return false;
     }
+
+    /* Ctrl+Shift+I / J / C / K */
     if(e.ctrlKey && e.shiftKey && (
         e.key === "I" || e.key === "i" ||
         e.key === "J" || e.key === "j" ||
@@ -167,11 +260,11 @@ document.addEventListener("keydown", function(e){
     )){
         e.preventDefault();
         e.stopPropagation();
-        try{ document.body.innerHTML = ""; }catch(err){}
-        window.close();
-        setTimeout(function(){ window.location.href = "about:blank"; }, 100);
+        nukeAndClose();
         return false;
     }
+
+    /* Cmd+Alt+I / J / C (macOS) */
     if(e.metaKey && e.altKey && (
         e.key === "I" || e.key === "i" ||
         e.key === "J" || e.key === "j" ||
@@ -179,52 +272,63 @@ document.addEventListener("keydown", function(e){
     )){
         e.preventDefault();
         e.stopPropagation();
-        try{ document.body.innerHTML = ""; }catch(err){}
-        window.close();
-        setTimeout(function(){ window.location.href = "about:blank"; }, 100);
+        nukeAndClose();
         return false;
     }
+
+    /* Ctrl+U (view source) */
     if(e.ctrlKey && (e.key === "u" || e.key === "U")){
         e.preventDefault();
         e.stopPropagation();
-        try{ document.body.innerHTML = ""; }catch(err){}
-        window.close();
-        setTimeout(function(){ window.location.href = "about:blank"; }, 100);
+        nukeAndClose();
         return false;
     }
+
+    /* Ctrl+S (save page) */
     if(e.ctrlKey && (e.key === "s" || e.key === "S")){
         e.preventDefault();
         e.stopPropagation();
+        nukeAndClose();
         return false;
     }
+
+    /* Ctrl+P (print) */
     if(e.ctrlKey && (e.key === "p" || e.key === "P")){
+        e.preventDefault();
+        e.stopPropagation();
+        nukeAndClose();
+        return false;
+    }
+
+    /* Ctrl+A (select all) */
+    if(e.ctrlKey && (e.key === "a" || e.key === "A")){
         e.preventDefault();
         e.stopPropagation();
         return false;
     }
+
+    /* Ctrl+C (copy) */
+    if(e.ctrlKey && (e.key === "c" || e.key === "C")){
+        e.preventDefault();
+        e.stopPropagation();
+        nukeAndClose();
+        return false;
+    }
+
+    /* Ctrl+X (cut) */
+    if(e.ctrlKey && (e.key === "x" || e.key === "X")){
+        e.preventDefault();
+        e.stopPropagation();
+        nukeAndClose();
+        return false;
+    }
+
 }, true);
 
-/* Devtools dimension detection */
-var devtoolsDetect = function(){
-    var threshold = 160;
-    var widthDiff = window.outerWidth - window.innerWidth;
-    var heightDiff = window.outerHeight - window.innerHeight;
-    if(widthDiff > threshold || heightDiff > threshold){
-        try{ document.body.innerHTML = ""; }catch(e){}
-        window.close();
-        setTimeout(function(){ window.location.href = "about:blank"; }, 100);
-    }
-};
-setInterval(devtoolsDetect, 500);
-window.addEventListener("resize", devtoolsDetect);
+/* =========================================================
+   SILENCE CONSOLE
+========================================================= */
 
-/* Anti drag / select / copy / cut */
-document.addEventListener("dragstart", function(e){ e.preventDefault(); return false; }, true);
-document.addEventListener("selectstart", function(e){ e.preventDefault(); return false; }, true);
-document.addEventListener("copy", function(e){ e.preventDefault(); return false; }, true);
-document.addEventListener("cut", function(e){ e.preventDefault(); return false; }, true);
-
-/* Silence console */
 console.log = function(){};
 console.warn = function(){};
 console.error = function(){};
